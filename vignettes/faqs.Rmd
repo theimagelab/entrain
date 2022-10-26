@@ -1,29 +1,31 @@
 ---
-title: "Frequently Asked Questions"
-output: 
-    rmdformats::readthedown:
-        self_contained: true
-        code_folding: hide
-        use_bookdown: true
+title: "FAQ"
 ---
 # Frequently Asked Questions
 
-## What does negative variance explained indicate?
+If you have a question not answered here, please raise a discussion on our Github.
+
+### Should I use Pseudotime or Velocity data?
+Pseudotime trajectories and RNA velocity are both popular tools for studying cell differentiation and fate decisions. However, both are useful in specific circumstances and their usefulness varies depending on the dataset.
+In general, RNA Velocity is most useful for cell differentiation that occurs relatively quickly (~hours/days). In contrast, Pseudotime (e.g. `Monocle3`) is more useful for longer time scale dynamics. It is important to note that, due to their dependence on dimension reduction, pseudotime-based methods require sufficient sampling at all intermediate stages of a cell's differentiation continuum. 
+
+
+### What does negative variance explained indicate?
  Variance explained is negative when the variance in the model is greater than the variance
  in the data, effectively it means that the model is not fitting the data well.
  Biologically, this could indicate that the genes are not under environmental control, and therefore 
  the observed trajectory dynamics have little or no relationship with activity of available ligands.
 
-## I have low or negative variance explained, but the output ligands align well with our knowledge about the system!
+### I have low or negative variance explained, but the output ligands align well or 'make sense' with known biology!
  Because ligand importance is a relative value, this could indicate that the output ligands
  are responsible for a small subset of variance in your data e.g. a small selection of genes, 
  while the majority of gene expression is not influenced by the environment.
  Because most of the gene expression variance is cell-intrinsic, this could lead to an overall
  negative variance explained while your ligands still influence a small number of (potentially important) genes.
 
- In knowing this, negative variance explained does not mean the ligands are automatically wrong.
+Overall, negative variance explained does not mean the ligands are automatically wrong.
  Rather, it means that, across the trajectory, there is more variance attributable to cell-intrinsic or other mechanisms than is attributable to the environment.
 
-## What is a 'good' variance explained?
-Biologically, it does not make sense to have a large amount of gene expression (e.g. >30% variance) to be under the influence of environmental factors. The majority of variance in gene expression, from cell to cell, is unlikely to be directly caused by their environmence.
+### What is a 'good' variance explained?
+Biologically, it does not make sense to have a large amount of gene expression (e.g. >30% variance) to be under the influence of environmental factors. The majority of variance in gene expression, from cell to cell, is unlikely to be directly caused by their environment. 
 

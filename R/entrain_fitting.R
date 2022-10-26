@@ -264,7 +264,7 @@ get_background_genes_path <- function(path_expr, pct = 0.05) {
     all_genes <- row.names(path_expr)
     
     n_cells <- ncol(path_expr)
-    n_cells_expressing<-rowSums( path_expr > 0 )  
+    n_cells_expressing<-Matrix::rowSums( path_expr > 0 )  
     expressed_genes <- names(n_cells_expressing[n_cells_expressing > pct*n_cells])
 }
 
@@ -537,6 +537,11 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
     }
     
     if (is.null(obj@misc$monocle_graph) || overwrite==TRUE ) {
+        if (!is.null(obj@misc$entrain$paths)) {
+            message("You are generating a new trajectory but existing Entrain analysis found. The existing analysis will be overwritten.")
+            obj@misc$entrain$paths <- NULL
+            obj@misc$entrain$dp_mst <- NULL
+        }
         # Receiver trajectory
         if (is.null(cds)) {
             cds <- SeuratWrappers::as.cell_data_set(obj,  assays = DefaultAssay(obj))
@@ -876,8 +881,7 @@ cellwise_influences <- function(obj,
                 cov<-cov[,1]
             }
             cov <- abs(cov)
-            
-            cov <- cov[order(cov),,drop=FALSE] %>% tail(n_top_genes)
+            cov <- cov[order(cov[,1]),,drop=FALSE] %>% tail(n_top_genes)
             genes<-rownames(cov)
             genes<-base::intersect(genes, rownames(ligand_target_matrix))
             
@@ -936,9 +940,10 @@ intersect_genes = function(obj, h5ad) {
     return(result_obj)
 }
 
-#' @title NicheNetR function to determine expressed genes of a cell type from a Seurat object single-cell RNA seq dataset or Seurat spatial transcriptomics dataset
-#' @description #' A single function sourced from NicheNetR v1.1.1 (GPL3.0): Browaeys, R., Saelens, W. & Saeys, Y. (2019). Nat Methods.
-#' Modified to deal with non-sparse matrices.
+#' @title Determine expressed genes of a cell type.
+#' @description  NicheNetR function to determine expressed genes of a cell type from a Seurat object single-cell RNA seq dataset or Seurat spatial transcriptomics dataset. 
+#' Function is modified from `nichenetr` v1.1.1 (GPL3.0): Browaeys, R., Saelens, W. & Saeys, Y. (2019). Nat Methods.
+#' Modified to deal with non-sparse matrices, and avoids the (non-trivial) installation of NicheNet.
 #' @param ident Name of cluster identity/identities of cells
 #' @param seurat_obj Single-cell expression dataset as Seurat object https://satijalab.org/seurat/.
 #' @param pct We consider genes expressed if they are expressed in at least a specific fraction of cells of a cluster. This number indicates this fraction. Default: 0.10. Choice of this parameter is important and depends largely on the used sequencing platform. We recommend to require a lower fraction (like the default 0.10) for 10X data than for e.g. Smart-seq2 data.

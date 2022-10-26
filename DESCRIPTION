@@ -16,6 +16,7 @@ Imports:
     ggnewscale,
     ggplot2,
     igraph,
+    Matrix,
     randomForest,
     Seurat,
     SeuratWrappers,

@@ -9,7 +9,7 @@ Entrain is based on, and can be considered a unification, of existing tools: Mon
 
 ## Installation
 ```{r}
-devtools::install_github("wunnies/entrain")
+devtools::install_github("theimagelab/entrain")
 ```
 
 ## Documentation

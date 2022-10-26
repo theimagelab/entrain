@@ -1,5 +1,5 @@
 ---
-title: "Entrain ligand-trajectory"
+title: "Entrain ligand-trajectory analysis"
 ---
 # Ligand-Trajectory Analysis from a Seurat object.
 This document outlines a basic Entrain analysis starting from a Seurat object. By the end of this document, you will identify ligands that are driving the trajectories in your data.
@@ -57,7 +57,7 @@ This function launches three main interactive steps that require input from you:
 1. Call Monocle3 to learn trajectory paths. This will require you to select a 'root' cell node. In most cases, you should choose cells that correspond to the precursor/progenitor cells in your system.
 2. Second, select the cell clusters corresponding to the microenvironment.
 3. Third, select the trajectory branches that you wish to analyze.
-``` {knitr, echo=FALSE, out.width="400px"}
+``` {r, echo=FALSE}
 knitr::include_graphics("choose_branches.png")
 ```
 
@@ -150,10 +150,10 @@ obj_entr<-cellwise_influences(obj_entr,
                               step_size=0.10,
                               window_pct=0.30,
                               n_top_ligands=5)
+plot_ligand_influences(obj_entr)
 ```
-```{Plot influences, echo=FALSE}
-plot_inf<-plot_ligand_influences(obj_entr)
-plot_inf
+``` {r, echo=FALSE}
+knitr::include_graphics("manno_influences_plot.png")
 ```
 
 Our influence analysis suggests that region most strongly influenced by the environment is around the border of neuroblast and neuron cell type label.
