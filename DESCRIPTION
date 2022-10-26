@@ -1,0 +1,28 @@
+Package: entrain
+Title: Predicting Environmental Regulators of Differentiation Trajectories
+Version: 0.0.0.9000
+Authors@R: 
+    person("Wunna", "Kyaw", , "wunna.a.kyaw@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-1509-8656"))
+Description: What the package does (one paragraph).
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Imports: 
+    assertthat,
+    dplyr,
+    DT,
+    ggnewscale,
+    ggplot2,
+    igraph,
+    randomForest,
+    Seurat,
+    SeuratWrappers,
+    shades,
+    shiny
+Suggests: 
+    circlize,
+    imputeTS,
+    monocle3,
+    reticulate
