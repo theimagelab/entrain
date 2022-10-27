@@ -13,4 +13,4 @@ devtools::install_github("theimagelab/entrain")
 ```
 
 ## Documentation
-Full documentation, including example analysis, can be found at `link`
+Full documentation, including example analysis, can be found at https://theimagelab.github.io/entrain/
