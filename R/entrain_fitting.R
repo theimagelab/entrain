@@ -1096,7 +1096,7 @@ get_expressed_genes = function(ident, seurat_obj, pct = 0.1, assay_oi = NULL){
         splits = split(1:nrow(exprs_mat), ceiling(seq_along(1:nrow(exprs_mat))/100))
         genes = splits %>% lapply(function(genes_indices, exprs,
                                            pct, n_cells_oi_in_matrix) {
-            begin_i = genes_indices[1]
+            begin_i = genes_indices[1] 
             end_i = genes_indices[length(genes_indices)]
             exprs = exprs[begin_i:end_i, , drop = FALSE]
             genes = exprs %>% apply(1, function(x) {
