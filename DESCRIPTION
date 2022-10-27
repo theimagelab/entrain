@@ -12,7 +12,6 @@ RoxygenNote: 7.2.1
 Imports: 
     assertthat,
     dplyr,
-    DT,
     ggnewscale,
     ggplot2,
     igraph,
@@ -21,7 +20,8 @@ Imports:
     Seurat,
     SeuratWrappers,
     shades,
-    shiny
+    shiny,
+    DT
 Suggests: 
     circlize,
     imputeTS,

@@ -172,14 +172,6 @@ weighted_networks <- readRDS("../data/weighted_networks_mm.rds")
 
 ``` {r show plot, fig.width=5, fig.height=5}
 draw_entrain_circos(obj = obj_v,
-                    vcluster= "vcluster1",
-                    lr_network = lr_network_mm,
-                    weighted_networks = weighted_networks)
-draw_entrain_circos(obj = obj_v,
-                    vcluster= "vcluster0",
-                    lr_network = lr_network_mm,
-                    weighted_networks = weighted_networks)
-draw_entrain_circos(obj = obj_v,
                     vcluster= "vcluster3",
                     lr_network = lr_network_mm,
                     weighted_networks = weighted_networks)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/entrain_plotting.R
 \name{plot_covarying_genes_scatter}
 \alias{plot_covarying_genes_scatter}
-\title{' Scatter plot of top trajectory covarying genes.}
+\title{Scatter plot of top trajectory covarying genes.}
 \usage{
 plot_covarying_genes_scatter(
   obj,
@@ -27,7 +27,7 @@ plot_covarying_genes_scatter(
 \item{ncol}{Number of columns for the facet plot grid.}
 }
 \value{
-'A ggplot2 plot object.
+A ggplot2 plot object.
 }
 \description{
 Recovers the expression of the top genes that covary with pseudotime and plots it as a scatter plot.

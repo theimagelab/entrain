@@ -6,30 +6,34 @@
 \usage{
 cellwise_influences(
   obj,
-  ligands_list = NULL,
   ligand_target_matrix,
-  slot = "data",
-  window_pct = 0.1,
-  step_size = 0.02,
-  n_top_genes = 100,
-  n_top_ligands = 5
+  ligands_list = NULL,
+  step_size = 0.1,
+  window_pct = 0.3,
+  n_top_ligands = 5,
+  n_top_genes = 500,
+  slot = "data"
 )
 }
 \arguments{
 \item{obj}{A seurat object that has been analyzed with get_path_ligands or get_traj_ligands_monocle.}
 
-\item{slot}{Slot of Seurat object from which to retrieve expression data.}
+\item{ligand_target_matrix}{NicheNet ligand-target data file.}
 
-\item{window_pct}{Size of the window, as a percentage of the number of cells in a path.}
+\item{ligands_list}{Optional, a character vector denoting ligands. If supplied, \code{cellwise_influences} will calculate influences for the ligands in \code{ligands_list} instead of the top ranked ligands.}
 
 \item{step_size}{Size of the step, or interval, as a percentage of the number of cells in a path.}
 
-\item{n_top_genes}{Number of top importance genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.}
+\item{window_pct}{Size of the window, as a percentage of the number of cells in a path.}
 
 \item{n_top_ligands}{Number of top ligands to consider in the cellwise analysis.}
+
+\item{n_top_genes}{Number of top dynamical genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.}
+
+\item{slot}{Slot of Seurat object from which to retrieve expression data.}
 }
 \value{
-'a Seurat object updated with per-cell ligand influence score in obj@misc$entrain$path$path_name$cellwise_influences.
+a Seurat object updated with per-cell ligand influence score in \code{obj@misc$entrain$path$path_name$cellwise_influences}, as well as a column in \code{obj@meta.data}
 }
 \description{
 Performs a sliding window analysis along the trajectory to identify windows where environmental influence is most apparent.

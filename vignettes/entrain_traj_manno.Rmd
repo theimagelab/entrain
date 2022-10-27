@@ -3,15 +3,16 @@ title: "Entrain ligand-trajectory analysis"
 ---
 # Ligand-Trajectory Analysis from a Seurat object.
 This document outlines a basic Entrain analysis starting from a Seurat object. By the end of this document, you will identify ligands that are driving the trajectories in your data.
-### Prior assumptions:
+## Prior assumptions:
+Entrain-Trajectory Analysis work best when:
 1. You have an idea of which cell clusters comprise the 'niche', or ligand-expressing cells, in your dataset.
 2. Your dataset has sufficiently sampled cells from all beginning, intermediate and terminal stages in the differentiation continuum.
-#
+
 ```{r Libraries,message=FALSE, results='hide', class.source = 'fold-show', eval=FALSE}
 library("SeuratDisk"); library("Seurat"); library("SeuratWrappers"); library("dplyr");
 library("entrain")
 ```
-```{r Libraries show,message=FALSE, results='hide', class.source = 'fold-show'}
+```{r Libraries show, echo=FALSE, message=FALSE, results='hide', class.source = 'fold-show'}
 library("SeuratDisk"); library("Seurat"); library("SeuratWrappers"); library("dplyr");
 devtools::load_all()
 ```
@@ -84,7 +85,7 @@ monocle_cds <- monocle3::learn_graph(monocle_cds,
                                      learn_graph_control = list(
                                          minimal_branch_len = 5,
                                          ncenter = 50))
-#
+
 node_coords <- monocle_cds@principal_graph_aux$UMAP$dp_mst %>% t() %>% as.data.frame() %>%
     mutate(node = rownames(.)) %>% stats::setNames(c("x", "y", "node"))
 monocle3::plot_cells(monocle_cds, color_cells_by="Class") +
@@ -100,6 +101,7 @@ monocle3::plot_cells(monocle_cds, color_cells_by="Class") +
     ggplot2::geom_point(data = node_coords, ggplot2::aes(x=x, y=y)) +
     ggplot2::geom_text(data = node_coords, ggplot2::aes(x=x, y=y, label=node))
 ```
+
 We can see that Monocle has captured some spurious trajectories as well as some potentially biological ones. Entrain allows us to analyze only the trajectories that we are confident in; in this example we can be more confident in the neuroblast differentiation trajectory bounded by nodes `Y_5` and `Y_27`.
 We will also label the radial glial cells at node `Y_7` as the root cells, by setting `root_pr_nodes = "Y_7"`
 
@@ -117,7 +119,7 @@ obj_entr <- get_traj_ligands_monocle(obj, cds = monocle_cds,
 # Visualizing results
 
 ## At a glance
-We can visualize the top ranked ligands at a glance with the following function, replacing "celltype" with the relevant column name in obj@meta.data
+We can visualize the top ranked ligands at a glance with the following function, replacing "celltype" with the relevant column name in `obj@meta.data`
 
 ``` {r, class.source = 'fold-show'}
 plot_ligand_trajectories(obj_entr, color_cells_by = "pseudotime", group_label_size=3)
@@ -126,7 +128,7 @@ plot_ligand_trajectories(obj_entr, color_cells_by = "pseudotime", group_label_si
 
 This suggests a number of ligands responsible for B cell and osteoblast maturation processes. These are well-established in literature as key drivers for cell differentiation. These ligands are relatively low in expression, and so would be difficult to pick up with a standard ligand-receptor analysis compared to more strongly expressed, but less biologically impactful ligands. NicheNet is unable to detect these ligands using default parameters. With a bit of threshold tuning, NicheNet fares better but still fails to include these ligands in the top 5.
 
-##In detail
+## In detail
 We can visualize the invididual ligand-gene relationships that contributing most to the trajectory dynamics. This data is extracted from the underlying NicheNet database that Entrain uses for fitting.
 
 ``` {r, results='hide', class.source = 'fold-show'}
@@ -156,5 +158,5 @@ plot_ligand_influences(obj_entr)
 knitr::include_graphics("manno_entrain_influences.png")
 ```
 
-Our influence analysis highlights the areas most strongly influenced by the environment in dark red. These regions coincide with  the border of neuroblast and neuron cell type label, and on the border of radial glia and neuroblast cell type labels despite our analysis being agnostic to labelling.
+Our influence analysis highlights the areas most strongly influenced by the environment in dark red. These regions coincide with  the border of neuroblast and neuron cell type label, and on the border of radial glia and neuroblast cell type labels. This is despite our analysis being agnostic to labelling.
 

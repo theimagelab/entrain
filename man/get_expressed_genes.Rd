@@ -2,7 +2,7 @@
 % Please edit documentation in R/entrain_fitting.R
 \name{get_expressed_genes}
 \alias{get_expressed_genes}
-\title{NicheNetR function to determine expressed genes of a cell type from a Seurat object single-cell RNA seq dataset or Seurat spatial transcriptomics dataset}
+\title{Determine expressed genes of a cell type.}
 \usage{
 get_expressed_genes(ident, seurat_obj, pct = 0.1, assay_oi = NULL)
 }
@@ -19,6 +19,7 @@ get_expressed_genes(ident, seurat_obj, pct = 0.1, assay_oi = NULL)
 A character vector with the gene symbols of the expressed genes
 }
 \description{
-#' A single function sourced from NicheNetR v1.1.1 (GPL3.0): Browaeys, R., Saelens, W. & Saeys, Y. (2019). Nat Methods.
-Modified to deal with non-sparse matrices.
+NicheNetR function to determine expressed genes of a cell type from a Seurat object single-cell RNA seq dataset or Seurat spatial transcriptomics dataset.
+Function is modified from \code{nichenetr} v1.1.1 (GPL3.0): Browaeys, R., Saelens, W. & Saeys, Y. (2019). Nat Methods.
+Modified to deal with non-sparse matrices, and avoids the (non-trivial) installation of NicheNet.
 }

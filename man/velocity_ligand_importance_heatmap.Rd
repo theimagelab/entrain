@@ -2,7 +2,7 @@
 % Please edit documentation in R/entrain_plotting.R
 \name{velocity_ligand_importance_heatmap}
 \alias{velocity_ligand_importance_heatmap}
-\title{velocity_ligand_importance_heatmap}
+\title{Velocity Ligand Importance Heatmap}
 \usage{
 velocity_ligand_importance_heatmap(
   obj,
@@ -18,6 +18,10 @@ velocity_ligand_importance_heatmap(
 \arguments{
 \item{obj}{A seurat object that has been analyzed with entrain_velocity}
 
+\item{vclusters}{Character vector of velocity clusters to include in the plot. Default \code{NULL} - include all velocity clusters,}
+
+\item{n_top_ligands}{Number of top ligands to visualize. Default 5.}
+
 \item{ligand_target_matrix}{NicheNet ligand-target data file.}
 
 \item{color_low}{Hex code of lower limit}
@@ -25,12 +29,10 @@ velocity_ligand_importance_heatmap(
 \item{color_high}{Hex code of upper limit.}
 
 \item{colorscale}{Name of a color palette to be passed to the palette argument of scale_fill_distiller. Overrides color_low and color_high.}
-
-\item{n_top_targets}{Number of top likelihood target genes to visualize. Default 10.}
 }
 \value{
 A gglot2 plot object.
 }
 \description{
-'Visualize the ligands and their feature importances towards the velocity clusters.
+Visualize the ligands and their feature importances towards the velocity clusters.
 }

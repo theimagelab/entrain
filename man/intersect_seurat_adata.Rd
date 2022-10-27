@@ -2,7 +2,7 @@
 % Please edit documentation in R/entrain_velocity.R
 \name{intersect_seurat_adata}
 \alias{intersect_seurat_adata}
-\title{'Subset cells in Seurat and Anndata objects such that they have identical cellIDs.}
+\title{Subset cells in Seurat and Anndata objects such that they have identical cellIDs.}
 \usage{
 intersect_seurat_adata(obj, adata)
 }
@@ -12,9 +12,9 @@ intersect_seurat_adata(obj, adata)
 \item{adata_clustered}{An anndata file.}
 }
 \value{
-'a Seurat object subset to cells that it has in common with adata.
+a Seurat object subset to cells that it has in common with adata.
 }
 \description{
-'Given a Seurat object obj, and an anndata object adata, calculates the intersection of cell names
+Given a Seurat object obj, and an anndata object adata, calculates the intersection of cell names
 between colnames(obj) and adata.obs_names, and subsets both objects to their intersection.
 }

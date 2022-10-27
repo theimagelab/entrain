@@ -8,10 +8,11 @@ plot_sender_influence_velocity(
   adata,
   velocity_clusters,
   velocity_cluster_key = "vcluster",
+  top_n_ligands = 3,
   frameon = FALSE,
   size = 40,
   sender_palette = "Reds",
-  title = " ",
+  title = "Influence",
   filename = "entrain_velocity_influence.png"
 )
 }

@@ -296,7 +296,6 @@ get_cell_xy <- function(cell_name, obj, reduction_name) {
 #' @return A vector of cluster names.
 #' @import dplyr
 #' @import shiny
-#' @import DT
 
 #' @export
 get_senders_interactive <- function(sender_obj,

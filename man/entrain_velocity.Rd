@@ -15,7 +15,7 @@ entrain_velocity(
   save_adata = NULL,
   velocity_cluster_key = NULL,
   num_jobs = 10L,
-  num_top_genes = NULL,
+  num_top_genes = 500L,
   expression_proportion_cutoff = 0.1,
   lr_network = NULL,
   ligand_target_matrix = NULL,

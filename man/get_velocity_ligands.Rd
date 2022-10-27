@@ -2,7 +2,7 @@
 % Please edit documentation in R/entrain_velocity.R
 \name{get_velocity_ligands}
 \alias{get_velocity_ligands}
-\title{'Identify ligands responsible for observed velocity vectors in velocity clusters.}
+\title{Identify ligands responsible for observed velocity vectors in velocity clusters.}
 \usage{
 get_velocity_ligands(
   obj,
@@ -28,7 +28,7 @@ get_velocity_ligands(
 \item{cluster_key}{Column name of the cluster labels in the metadata of adata_clustered.}
 }
 \value{
-'a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.
+a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.
 }
 \description{
 'Given an anndata object containing clustered velocity vectors, and the dynamical model for each gene obtained with scvelo recover_dynamics

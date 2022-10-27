@@ -5,7 +5,7 @@
 \title{Draw circos plot of Entrain ligands.}
 \usage{
 draw_entrain_circos(
-  obj_entr,
+  obj,
   path_name = NULL,
   vcluster = NULL,
   n_top_ligands = 10,
@@ -15,6 +15,8 @@ draw_entrain_circos(
 )
 }
 \arguments{
+\item{obj}{A seurat object containing the Entrain result from entrain_velocity or get_traj_ligands()}
+
 \item{path_name}{Optional. String indicating the name of the trajectory path. Use this if you want to plot ligands associated with pseudotime branches.}
 
 \item{vcluster}{Optional. String indicating the name of the velocity cluster. Use this if you wish to plot ligands associated with velocity clusters.}
@@ -24,8 +26,6 @@ draw_entrain_circos(
 \item{lr_network}{NicheNet ligand-receptor pairs data file.}
 
 \item{weighted_networks}{NicheNet weighted networks.}
-
-\item{obj}{A seurat object containing the Entrain result from entrain_velocity or get_traj_ligands()}
 }
 \value{
 NULL. Plots the circlize object to graphics output.
