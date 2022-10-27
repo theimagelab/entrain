@@ -400,7 +400,7 @@ plot_ligand_influences <- function(obj,
                                    n_top_ligands = 5,
                                    label_font_size = 4,
                                    label_position = "endpoint") {
-    influences_columns <- colnames(obj@meta.data)[grep("_influence", colnames(obj@meta.data))]
+    influences_columns <- colnames(obj@meta.data)[grep("Influences_", colnames(obj@meta.data))]
     influence_data<-obj@meta.data[c(influences_columns)]
     
     reduction_names<-names(obj@reductions[[reduction]])

@@ -796,29 +796,34 @@ get_path_ligands <- function(obj, expressed_ligands,
 #' @title Evaluates where ligands are most strongly driving trajectory dynamics.
 #' @description Performs a sliding window analysis along the trajectory to identify windows where environmental influence is most apparent.
 #' @param obj A seurat object that has been analyzed with get_path_ligands or get_traj_ligands_monocle.
-#' @param window_pct Size of the window, as a percentage of the number of cells in a path.
+#' @param ligand_target_matrix NicheNet ligand-target data file.
+#' @param ligands_list Optional, a character vector denoting ligands. If supplied, `cellwise_influences` will calculate influences for the ligands in `ligands_list` instead of the top ranked ligands.
 #' @param step_size Size of the step, or interval, as a percentage of the number of cells in a path.
-#' @param n_top_genes Number of top importance genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.
+#' @param window_pct Size of the window, as a percentage of the number of cells in a path.
 #' @param n_top_ligands Number of top ligands to consider in the cellwise analysis.
+#' @param n_top_genes Number of top dynamical genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.
 #' @param slot Slot of Seurat object from which to retrieve expression data. 
 
-#' @return 'a Seurat object updated with per-cell ligand influence score in obj@misc$entrain$path$path_name$cellwise_influences.
+#' @return a Seurat object updated with per-cell ligand influence score in `obj@misc$entrain$path$path_name$cellwise_influences`, as well as a column in `obj@meta.data`
 #' @export
 
 cellwise_influences <- function(obj,
-                                ligands_list=NULL,
                                 ligand_target_matrix,
-                                slot="data",
-                                window_pct=0.10,
-                                step_size=0.02,
-                                n_top_genes=100,
-                                n_top_ligands=5
+                                ligands_list=NULL,
+                                step_size=0.10,
+                                window_pct=0.30,
+                                n_top_ligands=5,
+                                n_top_genes=500,
+                                slot="data"
 ) {
     if (!requireNamespace("imputeTS", quietly = TRUE)) {
         stop(
             "Package \"imputeTS\" must be installed to use this function.",
             call. = FALSE
         )
+    }
+    if (is.null(ligand_target_matrix)) {
+        stop("Please supply a ligand_target_matrix.")
     }
     
     paths<-names(obj@misc$entrain$paths)
@@ -841,20 +846,21 @@ cellwise_influences <- function(obj,
         # get expr matrix
         path_obj<-subset(obj, cells=pseudotimes$path_cell_names)
         path_expr <- Seurat::GetAssayData(path_obj, slot = slot)
-        
         if (is.null(ligands_list) == TRUE) {
             importances <- pathdata$path_ligands_importances %>% head(n_top_ligands)
-            meta_colname <- paste(path, "influence", sep="_")
+            meta_colname <- paste("Influences", gsub("-", ".", path), sep="_")
+            cellwise_influences <- data.frame(matrix(nrow=nrow(pseudotimes), ncol=1+n_top_ligands))
+            colnames(cellwise_influences) <- c(names(importances), meta_colname )
         } else {
             ligands <- ligands_list[[path]]
             importances <- pathdata$path_ligands_importances[ligands]
-            message(paste("Calculating cellwise influences for ligands: ", ligands, sep=""))
-            meta_colname <- paste(ligands,"influence",sep="_")
+            message(paste("Calculating cellwise influences for ligands: ", paste(ligands,collapse=", "), sep=""))
+            meta_colname <- paste("Influences", paste(ligands,collapse="_"), sep="_")
+            cellwise_influences <- data.frame(matrix(nrow=nrow(pseudotimes), ncol=1+length(ligands)))
+            colnames(cellwise_influences) <- c(names(importances), meta_colname )
         }
         
-        cellwise_influences <- data.frame(matrix(nrow=nrow(pseudotimes), ncol=1+n_top_ligands))
         rownames(cellwise_influences) <- pseudotimes$path_cell_names
-        colnames(cellwise_influences) <- c(names(importances), paste(path, "influence", sep="_") )
         
         n=1
         while (n<nrow(pseudotimes)+1) {
@@ -874,31 +880,34 @@ cellwise_influences <- function(obj,
             #get correlation for each row. 
             window_expr <- as.matrix(window_expr)
             
-            cov <- get_branch_genes_covar(window_expr, window_pseudotimes$path_pseudotime)
+            covars <- get_branch_genes_covar(window_expr, window_pseudotimes$path_pseudotime)
             
-            if (sum(is.na(cov)) > 0) {
-                cov <- na.omit(t(cov)) 
-                cov<-cov[,1]
+            if (sum(is.na(covars)) > 0) {
+                covars <- na.omit(t(covars)) 
+                covars<-covars[,1]
             }
-            cov <- abs(cov)
-            cov <- cov[order(cov[,1]),,drop=FALSE] %>% tail(n_top_genes)
-            genes<-rownames(cov)
+            covars <- abs(covars)
+            covars <- covars[order(covars[,1]),,drop=FALSE] %>% tail(n_top_genes)
+            genes<-rownames(covars)
             genes<-base::intersect(genes, rownames(ligand_target_matrix))
             
             w<-ligand_target_matrix[genes, names(importances)]
-            #w[w < quantile(w,0.99)] <- 
-            cov<-cov[genes,]
-            cov<-(cov-min(cov))/(max(cov)-min(cov))
-            names(cov) <- genes
+            if (length(importances) == 1){
+                w <- as.matrix(w)
+            }
+
+            covars<-covars[genes,]
+            covars<-(covars-min(covars))/(max(covars)-min(covars))
+            names(covars) <- genes
             w<-(w-min(w))/(max(w)-min(w))
-            rf = randomForest::randomForest(y=cov, x=w, importance=TRUE)
+
+            rf = randomForest::randomForest(y=covars, x=w, importance=TRUE)
             
             rsq<-rf$rsq %>% tail(1)
             imps<-rf$importance[,"IncNodePurity"]
             
             cellwise_influences[n,]<-c(imps, rsq)
             n<-n+i
-            
         }
         
         if (i > 1) {
@@ -906,15 +915,23 @@ cellwise_influences <- function(obj,
                                          MARGIN=2,
                                          imputeTS::na_interpolation, option ="linear")
         }
-        
+
         # store data
         obj@misc$entrain$paths[[path]]$cellwise_influences <- cellwise_influences
-        temp <- merge(obj@meta.data, cellwise_influences, by.x=0, by.y=0, all.x=TRUE)
+
+        overwrite_cols <- colnames(cellwise_influences)[colnames(cellwise_influences) %in% colnames(obj@meta.data)]
+        if ( length(overwrite_cols) > 0  ) {
+            message("Existing cellwise-influences data found. Overwriting...")
+            metadata <- obj@meta.data %>% select(-one_of(overwrite_cols))
+        } else {
+            metadata <- obj@meta.data
+        }
+        temp <- merge(metadata, cellwise_influences, by.x=0, by.y=0, all.x=TRUE)
         temp <- transform(temp, row.names=Row.names, Row.names=NULL)
         temp[is.na(temp)] <- 0
         
         # preserve row order with original object
-        temp<-temp[match(rownames(temp), rownames(obj@meta.data)),]
+        temp<-temp[match(rownames(temp), rownames(metadata)),]
         
         obj@meta.data <- temp
         

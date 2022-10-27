@@ -153,8 +153,8 @@ obj_entr<-cellwise_influences(obj_entr,
 plot_ligand_influences(obj_entr)
 ```
 ``` {r, echo=FALSE}
-knitr::include_graphics("manno_influences_plot.png")
+knitr::include_graphics("manno_entrain_influences.png")
 ```
 
-Our influence analysis suggests that region most strongly influenced by the environment is around the border of neuroblast and neuron cell type label.
+Our influence analysis highlights the areas most strongly influenced by the environment in dark red. These regions coincide with  the border of neuroblast and neuron cell type label, and on the border of radial glia and neuroblast cell type labels despite our analysis being agnostic to labelling.
 
