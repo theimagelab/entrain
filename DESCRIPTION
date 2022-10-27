@@ -4,8 +4,11 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Wunna", "Kyaw", , "wunna.a.kyaw@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1509-8656"))
-Description: What the package does (one paragraph).
+Description: Entrain is an R package for analysis of single-cell RNA sequencing data.
+
+The purpose of Entrain is to predict how the cellular environment shapes cellular differentiation, and quantify the relative contribution of cell-cell communication versus cell-intrinsic mechanisms towards cell fate specification. If you have a dataset of cells that lie along a differentiation trajectory, and/or exhibit robust RNA velocity dynamics, then Entrain will help you generate hypotheses for identifying the environmental signals that are driving your observed dynamics.
 License: GPL (>= 3)
+URL: 
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
