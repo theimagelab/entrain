@@ -8,8 +8,8 @@ entrain_velocity(
   receiver_obj,
   sender_obj = NULL,
   adata,
+  sender_cluster_key,
   expressed_ligands = NULL,
-  sender_cluster_key = NULL,
   sender_clusters = NULL,
   reduction_key = NULL,
   save_adata = NULL,
@@ -23,21 +23,33 @@ entrain_velocity(
 )
 }
 \arguments{
+\item{receiver_obj}{A seurat object.}
+
+\item{sender_obj}{Optional. A seurat object. Use this if your sender cells are in a different dataset than your receiver cells. E.g. if the microenvironment data is in a different file than the differentiating cells.}
+
+\item{adata}{An anndata file containing velocities, preclustered with cluster_velocities().}
+
+\item{sender_cluster_key}{Column name in \code{adata.obs} that denotes the sender cluster annotation column.}
+
+\item{expressed_ligands}{Optional. A list of ligands expressed by the sender cells. This is calculated by default but you can specify if you have specific ligands of interest.}
+
+\item{sender_clusters}{Optional. Character vector denoting sender cluster cell types. If not supplied, will launch an interactive workflow selecting them manually.}
+
+\item{reduction_key}{Seurat reduction key for dimension reduction visualization.}
+
 \item{save_adata}{Optional. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo.}
 
 \item{velocity_cluster_key}{Column name of the cluster labels in the metadata of adata_clustered. Can be calculated manually in scvelo with scvelo.tl.velocity_clusters().}
 
+\item{num_jobs}{Long integer. Number of parallel jobs to run for scvelo recover dynamics function.}
+
+\item{num_top_genes}{Long integer. Number of top velocity genes to calculate likelihoods for. Default 500L.}
+
+\item{expression_proportion_cutoff}{Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than \code{expression_proportion_cutoff} fraction of cells in the sender cluster.}
+
 \item{lr_network}{NicheNet ligand-receptor pairs data file.}
 
 \item{ligand_target_matrix}{NicheNet ligand-target data file.}
-
-\item{obj}{A seurat object}
-
-\item{adata_clustered}{An anndata file containing velocities, preclustered with cluster_velocities().}
-
-\item{n_jobs}{Long integer. Number of parallel jobs to run for scvelo recover dynamics function.}
-
-\item{n_top_genes}{Long integer. Number of top velocity genes to calculate likelihoods for. Default 500L.}
 
 \item{resolution}{Optional argument defining resolution of velocity clustering. Default 0.05.}
 }

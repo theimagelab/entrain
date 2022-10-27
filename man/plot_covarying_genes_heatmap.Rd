@@ -12,10 +12,6 @@ plot_covarying_genes_heatmap(obj, path = paths[1], n_top_genes = 10)
 \item{path}{Name of list element in obj@misc$entrain$paths corresponding to the trajectory path that you wish to visualize.}
 
 \item{n_top_genes}{Number of top covarying genes to visualize. Default 10.}
-
-\item{color_low}{Hex code of the color mapped to the lower limit.}
-
-\item{color_high}{Hex code of the color mapped to upper limit.}
 }
 \value{
 A ggplot2 plot object.

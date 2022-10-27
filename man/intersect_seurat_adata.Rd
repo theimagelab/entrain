@@ -9,7 +9,7 @@ intersect_seurat_adata(obj, adata)
 \arguments{
 \item{obj}{A seurat object}
 
-\item{adata_clustered}{An anndata file.}
+\item{adata}{An anndata file.}
 }
 \value{
 a Seurat object subset to cells that it has in common with adata.

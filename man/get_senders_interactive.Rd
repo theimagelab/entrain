@@ -17,6 +17,8 @@ get_senders_interactive(
 \item{sender_cluster_key}{column name in sender_obj@meta.data that denotes the clusters.}
 
 \item{reduction_key}{Seurat reduction key for dimension reduction visualization.}
+
+\item{lr_network}{NicheNet ligand-receptor pairs data file.}
 }
 \value{
 A vector of cluster names.

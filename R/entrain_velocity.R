@@ -6,14 +6,20 @@
 #' Those wishing to run this on their own pre-generated clusters (E.g. if you have a bespoke set of marker genes) can do so by inputting an anndata with the custom cluster annotations 
 #' in the anndata.obs metadata, and passing the column name to cluster_key But this is not quite recommended because cells that are similar in expression could exhibit very different velocities. In turn,
 #' this will input a noisy dataset to Entrain's randomForest, and any ligands that come out of such an analysis will be spurious.
-#' @param obj A seurat object
-#' @param adata_clustered An anndata file containing velocities, preclustered with cluster_velocities().
+#' @param receiver_obj A seurat object.
+#' @param adata An anndata file containing velocities, preclustered with cluster_velocities().
+#' @param sender_cluster_key Column name in `adata.obs` that denotes the sender cluster annotation column.
+#' @param sender_clusters Optional. Character vector denoting sender cluster cell types. If not supplied, will launch an interactive workflow selecting them manually.
+#' @param sender_obj Optional. A seurat object. Use this if your sender cells are in a different dataset than your receiver cells. E.g. if the microenvironment data is in a different file than the differentiating cells.
+#' @param expressed_ligands Optional. A list of ligands expressed by the sender cells. This is calculated by default but you can specify if you have specific ligands of interest.
 #' @param save_adata Optional. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo.
 #' @param velocity_cluster_key Column name of the cluster labels in the metadata of adata_clustered. Can be calculated manually in scvelo with scvelo.tl.velocity_clusters(). 
-#' @param lr_network NicheNet ligand-receptor pairs data file.
-#' @param n_jobs Long integer. Number of parallel jobs to run for scvelo recover dynamics function.
-#' @param n_top_genes Long integer. Number of top velocity genes to calculate likelihoods for. Default 500L.
+#' @param reduction_key Seurat reduction key for dimension reduction visualization.
+#' @param num_jobs Long integer. Number of parallel jobs to run for scvelo recover dynamics function. 
+#' @param num_top_genes Long integer. Number of top velocity genes to calculate likelihoods for. Default 500L.
+#' @param expression_proportion_cutoff Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than `expression_proportion_cutoff` fraction of cells in the sender cluster.
 #' @param ligand_target_matrix NicheNet ligand-target data file.
+#' @param lr_network NicheNet ligand-receptor pairs data file.
 #' @param resolution Optional argument defining resolution of velocity clustering. Default 0.05.
 
 #' @return 'a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result. 
@@ -21,8 +27,8 @@
 
 entrain_velocity <- function(receiver_obj, sender_obj = NULL,
                              adata,
+                             sender_cluster_key,
                              expressed_ligands = NULL,
-                             sender_cluster_key = NULL,
                              sender_clusters = NULL,
                              reduction_key = NULL,
                              save_adata = NULL,
@@ -149,6 +155,8 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
 #' @param velocity_cluster_key Column name of the cluster labels in the metadata of adata_clustered. Can be calculated manually in scvelo with scvelo.tl.velocity_clusters(). 
 #' @param resolution Optional argument defining resolution of velocity clustering. Default 0.05.
 #' @param plot_file Plot file name. Default is "velocity_clusters.png".
+#' @param vector_type Vector types to plot. Only used with plot_file is not NULL. Either "grid" or "stream". Default "stream".
+#' @param reduction_key Dimension reduction to plot. Only use when plot_file is not NULL.
 
 #' @return Anndata object with velocity clusters denoted in adata.obs.<velocity_cluster_key>
 #' @export
@@ -156,10 +164,10 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
 entrain_cluster_velocities <- function(adata,
                                        velocity_cluster_key = "vcluster",
                                        resolution = 0.05,
-                                       reduction_key = NULL,
                                        save_adata = NULL,
                                        plot_file = "velocity_clusters.png",
                                        vector_type = "stream",
+                                       reduction_key = NULL,
                                        ...) {
     if (!requireNamespace("reticulate", quietly = TRUE)) {
         stop(
@@ -193,19 +201,6 @@ entrain_cluster_velocities <- function(adata,
     
     return(adata_clustered)
 }
-
-
-#' @title Identify ligands responsible for observed velocity vectors in velocity clusters.
-#' @description 'Given an anndata object containing clustered velocity vectors, and the dynamical model for each gene obtained with scvelo recover_dynamics
-#' identify ligands responsible for driving the top likelihood dynamics genes.
-#' @param obj A seurat object containing the receiver cells undergoing a differentiation trajectory
-#' @param adata_clustered An anndata file containing velocities, preclustered with cluster_velocities().
-#' @param save_adata Optional. Required if want to plot your output. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo. 
-#' @param cluster_key Column name of the cluster labels in the metadata of adata_clustered.
-#' @param lr_network NicheNet ligand-receptor pairs data file.
-#' @param ligand_target_matrix NicheNet ligand-target data file.
-
-#' @return a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result. 
 
 #' @export
 get_velocity_ligands <- function(obj,
@@ -277,7 +272,7 @@ get_velocity_ligands <- function(obj,
 #' @description Given a Seurat object obj, and an anndata object adata, calculates the intersection of cell names 
 #' between colnames(obj) and adata.obs_names, and subsets both objects to their intersection.
 #' @param obj A seurat object
-#' @param adata_clustered An anndata file.
+#' @param adata An anndata file.
 
 #' @return a Seurat object subset to cells that it has in common with adata.
 

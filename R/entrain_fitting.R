@@ -293,6 +293,7 @@ get_cell_xy <- function(cell_name, obj, reduction_name) {
 #' @param sender_obj Seurat object containing niche cell data
 #' @param sender_cluster_key column name in sender_obj@meta.data that denotes the clusters.
 #' @param reduction_key Seurat reduction key for dimension reduction visualization.
+#' @param lr_network NicheNet ligand-receptor pairs data file.
 #' @return A vector of cluster names.
 #' @import dplyr
 #' @import shiny
@@ -491,19 +492,26 @@ get_expressed_ligands <- function(obj, sender_cluster_key,
 #' @param sender_obj A seurat obj containing sender cells expressing ligands. Set to NULL if your sender cells are contained in 'obj'.
 #' @param sender_cluster_key Column name in metadata that denotes where sender cells are specified. If NULL, this defaults to the default Seurat Idents given by `levels(obj)`
 #' @param sender_cluster_names Unique values in column `sender_cluster_key` that denote sender cell clusters.
+#' @param cds Optional. You can supply a `monocle3` `cds` object here if you have run `monocle3::order_cells()` on it already.
 #' @param num_dim Number of dimensions for monocle reduce_dimension function.
 #' @param root_cells Optional. Character vector of root cell names that comprise the beginning of the trajectory (must be in colnames(obj)). If not given or NULL, will open a window to interactively select a root cell (Monocle's default behaviour).
-#' @param expressed_ligands Character vector of active ligands in dataset (must be in rownames(obj))
 #' @param path_cell_names Optional. Character vector of cell names that comprise the differentiation trajectory to be analyzed by Entrain (must be in colnames(obj)). If not given or NULL, will open a window to interactively select the trajectory path to analyze (Monocle's default behaviour).
+#' @param root_pr_nodes Argument for `monocle3::order_cells()`. Use if you want to specify root nodes programmatically.
+#' @param path_nodes Use if you want to specify the path without user interaction. e.g. `path_nodes = c("Y_2", "Y_50")` tells Entrain to analyze cells between the nodes `Y_2` and `Y_50`
+#' @param expressed_ligands Character vector of active ligands in dataset (must be in rownames(obj))
+#' @param reduction_key Seurat reduction key for dimension reduction visualization.
 #' @param ncenter Parameter for Monocle graph learning.
 #' @param use_partition Parameter for Monocle graph learning
 #' @param prune_graph Parameter for Monocle graph learning.
 #' @param close_loop Parameter for Monocle graph learning.
 #' @param ncenter Parameter for Monocle graph learning.
+#' @param minimal_branch_len Parameter for Monocle graph learning.
 #' @param overwrite If there is an existing Monocle trajectory in the obj (e.g. if you have run this function before), overwrite = TRUE will delete the old trajectory. Otherwise, the old trajectory will be used for Entrain.
 #' @param export_cds If TRUE, saves the Monocle cell_data_set trajectory object in obj@misc$monocle_graph. Set TRUE if you want to plot Entrain results afterwards.
 #' @param lr_network NicheNet ligand-receptor pairs data file.
 #' @param ligand_target_matrix NicheNet ligand-target data file.
+#' @param expression_proportion_cutoff Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than `expression_proportion_cutoff` fraction of cells in the sender cluster.
+#' @param covariance_cutoff Remove the bottom `covariance_cutoff` fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).
 #' @param precomputed_umap If you have a precomputed UMAP on your receiver cells that you wish to build a monocle trajectory on, then set this to the name of your precomputed embedding e.g. precomputed_umap = 'umap'
 #' @param sender_reduction_key Only applicable if sender_obj is not NULL: The dimension reduction key of sender_obj that you wish to use,
 #' @import dplyr
@@ -511,6 +519,7 @@ get_expressed_ligands <- function(obj, sender_cluster_key,
 #' @export
 #' 
 get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
+                                     cds = NULL,
                                      sender_cluster_key = NULL,
                                      sender_cluster_names = NULL,
                                      num_dim=10,
@@ -524,7 +533,7 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                                      use_partition = TRUE,
                                      precomputed_umap=NULL,
                                      prune_graph=T, close_loop = F,
-                                     overwrite=FALSE, cds = NULL,
+                                     overwrite=FALSE, 
                                      reduction_key = "MonocleUMAP_",
                                      sender_reduction_key = "umap",
                                      expression_proportion_cutoff = 0.01,
@@ -689,6 +698,8 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
 #' @param expressed_ligands Character vector of active ligands in dataset (must be in rownames(obj))
 #' @param lr_network NicheNet ligand-receptor pairs data file.
 #' @param ligand_target_matrix NicheNet ligand-target data file.
+#' @param reduction_name Seurat reduction key for dimension reduction visualization.
+#' @param covariance_cutoff Remove the bottom `covariance_cutoff` fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).
 #' @import dplyr
 #' @return a Seurat object with ligand trajectory results in obj$misc$entrain$paths$path_name
 #' @export

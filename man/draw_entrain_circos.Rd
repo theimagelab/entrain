@@ -26,6 +26,8 @@ draw_entrain_circos(
 \item{lr_network}{NicheNet ligand-receptor pairs data file.}
 
 \item{weighted_networks}{NicheNet weighted networks.}
+
+\item{palette}{RColorBrewer color palette for plotting sender cell clors.}
 }
 \value{
 NULL. Plots the circlize object to graphics output.

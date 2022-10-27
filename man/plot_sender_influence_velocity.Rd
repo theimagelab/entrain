@@ -23,6 +23,8 @@ plot_sender_influence_velocity(
 
 \item{velocity_cluster_key}{Column name of \code{adata.obs} metadata denoting velocity clusters.}
 
+\item{top_n_ligands}{Number of top ligands whose influence to visualize. Default 3.}
+
 \item{frameon}{scvelo.pl.velocity_embedding argument: Draws a frame around the plot.}
 
 \item{size}{scvelo.pl.velocity_embedding argument: Size of points.}

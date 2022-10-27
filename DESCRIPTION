@@ -9,6 +9,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
+VignetteBuilder: knitr
 Imports: 
     assertthat,
     dplyr,
@@ -21,9 +22,20 @@ Imports:
     SeuratWrappers,
     shades,
     shiny,
-    DT
+    DT,
+    ggrepel,
+    purrr,
+    reshape2,
+    scales,
+    tibble,
+    ROCR,
+    RColorBrewer,
+    tidyr,
+    SingleCellExperiment,
+    methods
 Suggests: 
     circlize,
     imputeTS,
+    knitr,
     monocle3,
     reticulate

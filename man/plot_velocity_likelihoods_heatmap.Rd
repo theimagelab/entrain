@@ -2,11 +2,11 @@
 % Please edit documentation in R/entrain_plotting.R
 \name{plot_velocity_likelihoods_heatmap}
 \alias{plot_velocity_likelihoods_heatmap}
-\title{Plot_velocity_likelihoods_heatmap}
+\title{Plot velocity likelihoods as a heatmap.}
 \usage{
 plot_velocity_likelihoods_heatmap(
   obj,
-  vclusters = NULL,
+  velocity_clusters = NULL,
   n_top_genes = 5,
   color_low = "#f6ffff",
   color_high = "#01bfc4",
@@ -28,5 +28,5 @@ plot_velocity_likelihoods_heatmap(
 A gglot2 plot object.
 }
 \description{
-'Visualize the top gene likelihoods for each velocity clusters.
+Visualize the top gene likelihoods for each velocity clusters.
 }

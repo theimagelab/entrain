@@ -32,6 +32,10 @@ get_path_ligands(
 
 \item{cluster_key}{Column name in colnames(obj@meta.data) corresponding to}
 
+\item{reduction_name}{Seurat reduction key for dimension reduction visualization.}
+
+\item{covariance_cutoff}{Remove the bottom \code{covariance_cutoff} fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).}
+
 \item{return_model}{If TRUE, will additionally save the raw random forest object in obj@misc$entrain$paths$path_name$model}
 }
 \value{

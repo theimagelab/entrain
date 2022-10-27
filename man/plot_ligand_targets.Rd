@@ -20,8 +20,6 @@ plot_ligand_targets(
 \item{n_top_ligands}{Number of top ligands to visualize. Default 10.}
 
 \item{ligand_target_matrix}{NicheNet ligand-target data file.}
-
-\item{colorscale}{Plotly list colorscale object.}
 }
 \value{
 A plotly plot object.

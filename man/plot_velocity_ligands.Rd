@@ -13,6 +13,7 @@ plot_velocity_ligands(
   linewidth_scale = 2,
   vector_type = "stream",
   velocity_cluster_key = "vcluster",
+  velocity_clusters = NULL,
   cell_palette = "dimgrey",
   size = 100,
   velocity_cluster_palette = "gnuplot",
@@ -39,6 +40,8 @@ plot_velocity_ligands(
 
 \item{velocity_cluster_key}{Column name of \code{adata.obs} metadata denoting velocity clusters.}
 
+\item{velocity_clusters}{Values in \code{adata.obs.velocity_cluster_key} denoting which velocity clusters and their ligands to visualize. Defaults to NULL, in which it will plot the ligands for all positive variance explained velocity clusters}
+
 \item{cell_palette}{A matplotlib color palette for annotations denoted in argument \code{color}.}
 
 \item{size}{scvelo.pl.velocity_embedding argument: Size of points.}
@@ -52,8 +55,6 @@ plot_velocity_ligands(
 \item{figsize}{Figure size. Default is \code{c(10,10)}}
 
 \item{plot_output_path}{Filename of plot to save.}
-
-\item{velocity_clusters}{Values in \code{adata.obs.velocity_cluster_key} denoting which velocity clusters and their ligands to visualize.}
 }
 \value{
 NULL. Saves a plot in working directory with name \code{plot_output_path}

@@ -7,6 +7,7 @@
 get_traj_ligands_monocle(
   obj,
   sender_obj = NULL,
+  cds = NULL,
   sender_cluster_key = NULL,
   sender_cluster_names = NULL,
   num_dim = 10,
@@ -22,7 +23,6 @@ get_traj_ligands_monocle(
   prune_graph = T,
   close_loop = F,
   overwrite = FALSE,
-  cds = NULL,
   reduction_key = "MonocleUMAP_",
   sender_reduction_key = "umap",
   expression_proportion_cutoff = 0.01,
@@ -37,6 +37,8 @@ get_traj_ligands_monocle(
 
 \item{sender_obj}{A seurat obj containing sender cells expressing ligands. Set to NULL if your sender cells are contained in 'obj'.}
 
+\item{cds}{Optional. You can supply a \code{monocle3} \code{cds} object here if you have run \code{monocle3::order_cells()} on it already.}
+
 \item{sender_cluster_key}{Column name in metadata that denotes where sender cells are specified. If NULL, this defaults to the default Seurat Idents given by \code{levels(obj)}}
 
 \item{sender_cluster_names}{Unique values in column \code{sender_cluster_key} that denote sender cell clusters.}
@@ -45,9 +47,15 @@ get_traj_ligands_monocle(
 
 \item{root_cells}{Optional. Character vector of root cell names that comprise the beginning of the trajectory (must be in colnames(obj)). If not given or NULL, will open a window to interactively select a root cell (Monocle's default behaviour).}
 
+\item{root_pr_nodes}{Argument for \code{monocle3::order_cells()}. Use if you want to specify root nodes programmatically.}
+
 \item{expressed_ligands}{Character vector of active ligands in dataset (must be in rownames(obj))}
 
 \item{path_cell_names}{Optional. Character vector of cell names that comprise the differentiation trajectory to be analyzed by Entrain (must be in colnames(obj)). If not given or NULL, will open a window to interactively select the trajectory path to analyze (Monocle's default behaviour).}
+
+\item{path_nodes}{Use if you want to specify the path without user interaction. e.g. \code{path_nodes = c("Y_2", "Y_50")} tells Entrain to analyze cells between the nodes \code{Y_2} and \code{Y_50}}
+
+\item{minimal_branch_len}{Parameter for Monocle graph learning.}
 
 \item{ncenter}{Parameter for Monocle graph learning.}
 
@@ -61,7 +69,13 @@ get_traj_ligands_monocle(
 
 \item{overwrite}{If there is an existing Monocle trajectory in the obj (e.g. if you have run this function before), overwrite = TRUE will delete the old trajectory. Otherwise, the old trajectory will be used for Entrain.}
 
+\item{reduction_key}{Seurat reduction key for dimension reduction visualization.}
+
 \item{sender_reduction_key}{Only applicable if sender_obj is not NULL: The dimension reduction key of sender_obj that you wish to use,}
+
+\item{expression_proportion_cutoff}{Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than \code{expression_proportion_cutoff} fraction of cells in the sender cluster.}
+
+\item{covariance_cutoff}{Remove the bottom \code{covariance_cutoff} fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).}
 
 \item{lr_network}{NicheNet ligand-receptor pairs data file.}
 

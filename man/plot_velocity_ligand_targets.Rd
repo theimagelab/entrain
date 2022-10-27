@@ -7,7 +7,7 @@
 plot_velocity_ligand_targets(
   obj,
   n_top_targets = 10,
-  vcluster = NULL,
+  velocity_cluster = NULL,
   n_top_ligands = 10,
   ligand_target_matrix,
   color_low = "#f6ffff",
@@ -20,6 +20,8 @@ plot_velocity_ligand_targets(
 
 \item{n_top_targets}{Number of top likelihood target genes to visualize. Default 10.}
 
+\item{velocity_cluster}{Name of the velocity cluster whose regulatory relationships you wish to plot.}
+
 \item{n_top_ligands}{Number of top ligands to visualize. Default 10.}
 
 \item{ligand_target_matrix}{NicheNet ligand-target data file.}
@@ -27,6 +29,8 @@ plot_velocity_ligand_targets(
 \item{color_low}{Hex code of lower limit}
 
 \item{color_high}{Hex code of upper limit.}
+
+\item{colorscale}{Name of an RColorBrewer palette. Default \code{Greens}}
 }
 \value{
 A gglot2 plot object.

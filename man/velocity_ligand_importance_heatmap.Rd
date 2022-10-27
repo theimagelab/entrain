@@ -6,7 +6,7 @@
 \usage{
 velocity_ligand_importance_heatmap(
   obj,
-  vclusters = NULL,
+  velocity_clusters = NULL,
   n_top_ligands = 5,
   ligand_target_matrix,
   color_low = "#f6ffff",
@@ -18,8 +18,6 @@ velocity_ligand_importance_heatmap(
 \arguments{
 \item{obj}{A seurat object that has been analyzed with entrain_velocity}
 
-\item{vclusters}{Character vector of velocity clusters to include in the plot. Default \code{NULL} - include all velocity clusters,}
-
 \item{n_top_ligands}{Number of top ligands to visualize. Default 5.}
 
 \item{ligand_target_matrix}{NicheNet ligand-target data file.}
@@ -29,6 +27,10 @@ velocity_ligand_importance_heatmap(
 \item{color_high}{Hex code of upper limit.}
 
 \item{colorscale}{Name of a color palette to be passed to the palette argument of scale_fill_distiller. Overrides color_low and color_high.}
+
+\item{rescale_columns}{Boolean. If TRUE, rescales all ligand importances between 0 and 1. This is recommended because random forest importances are relative.}
+
+\item{vclusters}{Character vector of velocity clusters to include in the plot. Default \code{NULL} - include all velocity clusters,}
 }
 \value{
 A gglot2 plot object.
