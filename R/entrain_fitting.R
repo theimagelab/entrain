@@ -1,5 +1,4 @@
-
-#' @export
+#' @noRd
 get_skeleton <- function(g) {
     if (!requireNamespace("igraph", quietly = TRUE)) {
         stop(
@@ -24,7 +23,7 @@ get_skeleton <- function(g) {
     ng
 }
 
-#' @export
+#' @noRd
 assign_branch_to_nodes <- function(skeleton, principal_igraph) {
     if (!requireNamespace("igraph", quietly = TRUE)) {
         stop(
@@ -57,6 +56,12 @@ assign_branch_to_nodes <- function(skeleton, principal_igraph) {
     return(principal_nodes)
 }
 
+#' @title Get cells between nodes.
+#' @description cells that are on the shortest path on the minimal spanning tree between nodes.
+#' @param endpoint_nodes Vector of length 2 denoting nodes to search between.
+#' @param cds A `monocle3` cell_data_set object with `monocle3::order_cells()` run on it.
+#' @return a vector of cell names.
+
 #' @export
 cells_between_vertices <- function(endpoint_nodes, cds) {
     if (!requireNamespace("igraph", quietly = TRUE)) {
@@ -88,7 +93,7 @@ cells_between_vertices <- function(endpoint_nodes, cds) {
     return(cell_names)
 }
 
-#' @export
+#' @noRd
 assign_nodes_to_single_path <- function(branch_endpoints, skeleton, principal_igraph) {
     if (!requireNamespace("igraph", quietly = TRUE)) {
         stop(
@@ -111,7 +116,7 @@ assign_nodes_to_single_path <- function(branch_endpoints, skeleton, principal_ig
     return(branch_nodes)
 }
 
-#' @export
+#' @noRd
 get_branch_membership <- function(cds, reduction_method="UMAP") {
     principal_igraph <- cds@principal_graph$UMAP
     skeleton <- get_skeleton(principal_igraph) #create skeleton graph
@@ -137,16 +142,7 @@ get_branch_membership <- function(cds, reduction_method="UMAP") {
     cds
 }
 
-# get_branch_correlated_genes_binary <- function(branch_expr, branch_seuobj, quantile_cutoff = 0.99){
-#     branch_pseudotime <- branch_seuobj@meta.data$pseudotime
-#     
-#     corr <- cor(branch_pseudotime,t(branch_expr))
-#     corr[is.na(corr)] <- 0
-#     corr <- abs(corr)
-#     branch_corr_genes_bool <- as.data.frame(corr>quantile(corr,quantile_cutoff))
-# }
-
-#' @export
+#' @noRd
 get_branch_genes_covar<- function(branch_expr, pseudotime, quantile_cutoff = 0.90, slot='data', binary=FALSE){
     covar <- cov(pseudotime,t(branch_expr))
     covar[is.na(covar)] <- 0
@@ -162,7 +158,7 @@ get_branch_genes_covar<- function(branch_expr, pseudotime, quantile_cutoff = 0.9
     return(result)
 }
 
-#' @export
+#' @noRd
 get_branch_correlated_genes_regress <- function(branch_expr, branch_cells){
     branch_pseudotime <- branch_cells$pseudotime
     
@@ -173,7 +169,7 @@ get_branch_correlated_genes_regress <- function(branch_expr, branch_cells){
     branch_corr_genes_regress <- as.data.frame(corr)
 }
 
-#' @export
+#' @noRd
 filter_lr_genes <- function(cells, lr_network, filter) {
     if (filter=="l") {
         ligands <- lr_network$from %>% unique()
@@ -185,7 +181,7 @@ filter_lr_genes <- function(cells, lr_network, filter) {
     result_genes
 }
 
-#' @export
+#' @noRd
 get_expressed_receptors <- function(receivers_seuobj, expression_proportion_cutoff, lr_network) {
     expressed_genes_receivers <- get_expressed_genes(Idents(receivers_seuobj) %>% unique(),
                                                                 receivers_seuobj,
@@ -194,7 +190,7 @@ get_expressed_receptors <- function(receivers_seuobj, expression_proportion_cuto
     expressed_receptors <- base::intersect(expressed_genes_receivers, all_receptors)
 }
 
-#' @export
+#' @noRd
 get_active_ligand_receptor <- function(receivers_seuobj, expressed_ligands, expression_proportion_cutoff = 0.10, lr_network, ligand_target_matrix) {
     
     #subset to genes that are expressed in at least <expression_proportion_cutoff>% of the cells
@@ -207,7 +203,7 @@ get_active_ligand_receptor <- function(receivers_seuobj, expressed_ligands, expr
     lr_network_expressed
 }
 
-#' @export
+#' @noRd
 get_ligand_trajectory_scores_regression <- function(pseudotime_genes, active_ligand_potentials){
     assertthat::assert_that(ncol(active_ligand_potentials) > 0, msg = paste("Subsetted ligand_target_matrix has no ligands",
                                                                             "Check that your thresholds have captured active ligands"))
@@ -220,7 +216,7 @@ get_ligand_trajectory_scores_regression <- function(pseudotime_genes, active_lig
     list(genes=pseudotime_genes_intersection, model=rf)
 }
 
-#' @export
+#' @noRd
 get_ligand_trajectory_scores <- function(pseudotime_associated_genes_bool, active_ligand_potentials, importance_measure = "MeanDecreaseGini"){
     intersection_genes <- base::intersect(rownames(active_ligand_potentials), names(pseudotime_associated_genes_bool))
     
@@ -232,17 +228,7 @@ get_ligand_trajectory_scores <- function(pseudotime_associated_genes_bool, activ
     list(importances, pseudotime_associated_genes_bool, rf)
 }
 
-#' @export
-model_evaluation_rf <- function(rf) {
-    predictions <- predict(rf,type="prob")
-    true_values <- rf$y
-    performance <- ROCR::prediction(predictions[,"TRUE"],true_values)
-    eval_roc <- ROCR::performance(performance, "tpr","fpr")
-    eval_auc <- ROCR::performance(performance, "auc")
-    list(eval_roc, perf_auc)
-}
-
-#' @export
+#' @noRd
 add_branch_data_to_seuobj <- function(cds, 
                                       obj,
                                       reduction_method = "UMAP") {
@@ -259,7 +245,7 @@ add_branch_data_to_seuobj <- function(cds,
     return(obj)
 }
 
-#' @export
+#' @noRd
 get_background_genes_path <- function(path_expr, pct = 0.05) {
     all_genes <- row.names(path_expr)
     
@@ -269,7 +255,7 @@ get_background_genes_path <- function(path_expr, pct = 0.05) {
 }
 
 #Get UMAP xy coordinates of a principal node. Needed to know where to plot ligand labels.
-#' @export
+#' @noRd
 get_node_xy <- function(node_name, obj) {
     node_xy <- t(obj@misc$entrain$dp_mst) %>%
         as.data.frame() %>%
@@ -280,7 +266,7 @@ get_node_xy <- function(node_name, obj) {
 }
 
 # Get UMAP xy coordinates of a cell. Needed to know where to plot ligand labels.
-#' @export
+#' @noRd
 get_cell_xy <- function(cell_name, obj, reduction_name) {
     xy <- obj[[reduction_name]]@cell.embeddings %>% as.data.frame()
     x = xy[cell_name, 1]
@@ -473,6 +459,7 @@ get_senders_interactive <- function(sender_obj,
     sel <- shiny::runApp(shiny::shinyApp(ui, server))
 }
 
+#' @noRd
 get_expressed_ligands <- function(obj, sender_cluster_key,
                              sender_cluster_names,
                              proportion_cutoff = 0.01,

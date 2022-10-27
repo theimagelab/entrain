@@ -15,6 +15,8 @@ plot_ligand_targets(
 \arguments{
 \item{obj}{A seurat object that has been analyzed with get_path_ligands or get_traj_ligands_monocle.}
 
+\item{path}{A path name. Must be from in \code{names(obj@misc$entrain$paths)}}
+
 \item{n_top_targets}{Number of top importance target genes to visualize. Default 10.}
 
 \item{n_top_ligands}{Number of top ligands to visualize. Default 10.}

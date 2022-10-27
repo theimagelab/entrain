@@ -16,6 +16,8 @@ plot_velocity_likelihoods_heatmap(
 \arguments{
 \item{obj}{A seurat object that has been analyzed with entrain_velocity}
 
+\item{velocity_clusters}{Character vector of velocity clusters to include in the plot. Default \code{NULL} - include all velocity clusters,}
+
 \item{n_top_genes}{Number of top likelihood  genes to visualize. Default 10.}
 
 \item{color_low}{Hex code of lower limit}

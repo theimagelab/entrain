@@ -2,6 +2,7 @@
 #' @title Plots a heatmap of ligand-target regulatory potentials extracted from NicheNet.
 #' @description Visualize the ligand-target regulatory relationships that are driving the analyzed trajectory paths.
 #' @param obj A seurat object that has been analyzed with get_path_ligands or get_traj_ligands_monocle.
+#' @param path A path name. Must be from in `names(obj@misc$entrain$paths)`
 #' @param n_top_targets Number of top importance target genes to visualize. Default 10.
 #' @param n_top_ligands Number of top ligands to visualize. Default 10.
 #' @param ligand_target_matrix NicheNet ligand-target data file.
@@ -472,7 +473,7 @@ plot_ligand_influences <- function(obj,
     }
     return(g)
 }
-#' @export
+
 get_ligand_plot_labels <- function(obj,
                                    n_top_ligands,
                                    paths,
@@ -566,7 +567,7 @@ plot_velocity_ligand_targets <- function(obj,
 #' @title Velocity Ligand Importance Heatmap
 #' @description Visualize the ligands and their feature importances towards the velocity clusters.
 #' @param obj A seurat object that has been analyzed with entrain_velocity
-#' @param vclusters Character vector of velocity clusters to include in the plot. Default `NULL` - include all velocity clusters,
+#' @param velocity_clusters Character vector of velocity clusters to include in the plot. Default `NULL` - include all velocity clusters,
 #' @param n_top_ligands Number of top ligands to visualize. Default 5.
 #' @param ligand_target_matrix NicheNet ligand-target data file.
 #' @param color_low Hex code of lower limit
@@ -630,6 +631,7 @@ velocity_ligand_importance_heatmap <- function(obj,
 #' @title Plot velocity likelihoods as a heatmap.
 #' @description Visualize the top gene likelihoods for each velocity clusters.
 #' @param obj A seurat object that has been analyzed with entrain_velocity
+#' @param velocity_clusters Character vector of velocity clusters to include in the plot. Default `NULL` - include all velocity clusters,
 #' @param n_top_genes Number of top likelihood  genes to visualize. Default 10.
 #' @param color_low Hex code of lower limit
 #' @param color_high Hex code of upper limit.

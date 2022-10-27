@@ -1,5 +1,7 @@
 ---
 title: "Entrain ligand-trajectory analysis"
+output: rmarkdown::html_vignette
+
 ---
 # Ligand-Trajectory Analysis from a Seurat object.
 This document outlines a basic Entrain analysis starting from a Seurat object. By the end of this document, you will identify ligands that are driving the trajectories in your data.

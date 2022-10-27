@@ -17,6 +17,7 @@ entrain_velocity(
   num_jobs = 10L,
   num_top_genes = 500L,
   expression_proportion_cutoff = 0.1,
+  resolution = 0.05,
   lr_network = NULL,
   ligand_target_matrix = NULL,
   ...
@@ -47,14 +48,16 @@ entrain_velocity(
 
 \item{expression_proportion_cutoff}{Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than \code{expression_proportion_cutoff} fraction of cells in the sender cluster.}
 
+\item{resolution}{Optional argument defining resolution of velocity clustering. Default 0.05.}
+
 \item{lr_network}{NicheNet ligand-receptor pairs data file.}
 
 \item{ligand_target_matrix}{NicheNet ligand-target data file.}
 
-\item{resolution}{Optional argument defining resolution of velocity clustering. Default 0.05.}
+\item{...}{Arguments to pass to \code{entrain_cluster_velocities()} and \code{scvelo.pl.velocity_embedding_stream()}.}
 }
 \value{
-'a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.
+a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.
 }
 \description{
 Given an anndata object containing clustered velocity vectors, and NicheNet ligand database, identify ligands responsible for velocity vectors.

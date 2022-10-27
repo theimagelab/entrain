@@ -21,8 +21,9 @@
 #' @param ligand_target_matrix NicheNet ligand-target data file.
 #' @param lr_network NicheNet ligand-receptor pairs data file.
 #' @param resolution Optional argument defining resolution of velocity clustering. Default 0.05.
+#' @param ... Arguments to pass to `entrain_cluster_velocities()` and `scvelo.pl.velocity_embedding_stream()`.
 
-#' @return 'a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result. 
+#' @return a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result. 
 #' @export
 
 entrain_velocity <- function(receiver_obj, sender_obj = NULL,
@@ -36,6 +37,7 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
                              num_jobs = 10L,
                              num_top_genes = 500L,
                              expression_proportion_cutoff = 0.10,
+                             resolution = 0.05,
                              lr_network = NULL, ligand_target_matrix = NULL,
                              ...) {
     if (!requireNamespace("reticulate", quietly = TRUE)) {
@@ -100,6 +102,7 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
         
         adata_clustered <- entrain_cluster_velocities(adata,
                                                       cluster_key = velocity_cluster_key,
+                                                      resolution=resolution,
                                                       ...)
         message("Velocities have been clustered, with default cluster_key = \"vcluster\"")
     } else {
@@ -149,7 +152,6 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
 
 #' @title Cluster the velocity matrix
 #' @description Use Leiden algorithm to cluster the velocities into discrete groups representing differentiation activity.
-#' @param obj A seurat object
 #' @param adata An anndata file containing velocities.
 #' @param save_adata Optional. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo.
 #' @param velocity_cluster_key Column name of the cluster labels in the metadata of adata_clustered. Can be calculated manually in scvelo with scvelo.tl.velocity_clusters(). 
@@ -157,6 +159,7 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
 #' @param plot_file Plot file name. Default is "velocity_clusters.png".
 #' @param vector_type Vector types to plot. Only used with plot_file is not NULL. Either "grid" or "stream". Default "stream".
 #' @param reduction_key Dimension reduction to plot. Only use when plot_file is not NULL.
+#' @param ... Arguments to pass to `scvelo.pl.velocity_embedding_stream()` or `scvelo.pl.velocity_embedding_grid()`, depending on `vector_type`
 
 #' @return Anndata object with velocity clusters denoted in adata.obs.<velocity_cluster_key>
 #' @export
@@ -202,7 +205,6 @@ entrain_cluster_velocities <- function(adata,
     return(adata_clustered)
 }
 
-#' @export
 get_velocity_ligands <- function(obj,
                                  fit_likelihoods,
                                  velocity_clusters,

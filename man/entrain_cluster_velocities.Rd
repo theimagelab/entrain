@@ -30,7 +30,7 @@ entrain_cluster_velocities(
 
 \item{reduction_key}{Dimension reduction to plot. Only use when plot_file is not NULL.}
 
-\item{obj}{A seurat object}
+\item{...}{Arguments to pass to \code{scvelo.pl.velocity_embedding_stream()} or \code{scvelo.pl.velocity_embedding_grid()}, depending on \code{vector_type}}
 }
 \value{
 Anndata object with velocity clusters denoted in adata.obs.<velocity_cluster_key>

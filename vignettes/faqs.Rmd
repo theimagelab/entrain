@@ -1,5 +1,6 @@
 ---
 title: "FAQ"
+output: rmarkdown::html_vignette
 ---
 # Frequently Asked Questions
 

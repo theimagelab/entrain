@@ -1,5 +1,6 @@
 ---
 title: "Entrain ligand-velocity analysis"
+output: rmarkdown::html_vignette
 
 ---
 # Entrain ligand-velocity analysis from an Anndata object. 
