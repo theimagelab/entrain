@@ -346,8 +346,7 @@ get_senders_interactive <- function(sender_obj,
     )
     
     server <- function(input, output, session) {
-        selected_points <- sender_obj@meta.data[0, ]
-        
+
         limits <- shiny::reactiveValues(
             x_range=NULL,
             y_range=NULL

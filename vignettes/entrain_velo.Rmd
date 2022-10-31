@@ -1,6 +1,5 @@
 ---
 title: "Entrain ligand-velocity analysis"
-output: rmarkdown::html_vignette
 
 ---
 # Entrain ligand-velocity analysis from an Anndata object. 
@@ -44,7 +43,7 @@ Convert("manno_entrain.h5ad", dest = "h5seurat", overwrite = FALSE, verbose = TR
 obj <- LoadH5Seurat("Manno_E10_E11.h5seurat", assays="RNA")
 ```
 ```{r, echo=FALSE}
-obj_v <- readRDS("../data/manno_entrain.rds")
+obj_v <- readRDS("../../entrain_vignette_data/manno_entrain.rds")
 ```
 
 Entrain relies on the NicheNet database of ligand-receptor-gene networks for the prior knowledge needed to make conclusions about environmentally-influenced trajectories.
@@ -54,8 +53,8 @@ lr_network_mm <- readRDS(url("https://zenodo.org/record/7233173/files/lr_network
 ligand_target_matrix_mm <- readRDS(url("https://zenodo.org/record/7233173/files/ligand_target_matrix_mm.rds"))
 ```
 ```{r, echo=FALSE}
-ligand_target_matrix_mm <- readRDS("../data/ligand_target_matrix_mm.rds")
-lr_network_mm <- readRDS("../data/lr_network_mm.rds")
+ligand_target_matrix_mm <- readRDS("../../entrain_vignette_data/ligand_target_matrix_mm.rds")
+lr_network_mm <- readRDS("../../entrain_vignette_data/lr_network_mm.rds")
 ```
 
 ### Data at a glance
@@ -81,7 +80,7 @@ Entrain fully integrates the scvelo package for velocity analysis. Below are the
 adata <- entrain_cluster_velocities(h5ad_path, resolution=0.1)
 ```
 ``` {r Cluster velocities show, message=FALSE, echo=FALSE}
-knitr::include_graphics("entrain_velocity_clusters.png")
+knitr::include_graphics("figures/entrain_velocity_clusters.png")
 ```
 
 We can see that the velocity clusters roughly, but not exactly, correspond to cell type clusters, indicating that velocities are moderately correlated with cell type.
@@ -93,7 +92,7 @@ We will also save the resulting .h5ad object for plotting our results afterwards
 ```{r Run Entrain velocity, results='hide', message=FALSE, eval=FALSE, warning=FALSE}
 sender_cluster_names <- c("Blood", "Fibroblast", "Immune", "Mesoderm")
 Idents(obj) <- "Class"
-save_adata =  "../data/manno_entrain_result.h5ad"
+save_adata =  "../../entrain_vignette_data/manno_entrain_result.h5ad"
 obj_v <- entrain_velocity(receiver_obj = obj,
                           adata = adata,
                           save_adata = save_adata,
@@ -114,7 +113,7 @@ plot_velocity_ligands(adata=save_adata,
 ```
 
 ```{r Plot results, echo = FALSE}
-knitr::include_graphics("manno_entrain.png")
+knitr::include_graphics("figures/manno_entrain.png")
 ```
 This suggests a number of ligands responsible for neurogenic differentiation processes. These are well-established in literature as key drivers for cell differentiation.
 
@@ -125,7 +124,7 @@ Entrain-Velocity provides detailed plotting functions for visualizing extracellu
 Visualization of cells that express the ligands found in our analysis. Cells are coloured based on mean expression of the `top_n_ligands` predicted to be driving velocities in the velocity cluster. 
 ```{r Sender influence show, eval=FALSE}
 vclusters_to_plot <- c("vcluster0", "vcluster1", "vcluster2", "vcluster3")
-save_adata =  "../data/manno_entrain.h5ad"
+save_adata =  "../../entrain_vignette_data/manno_entrain.h5ad"
 plot_sender_influence_velocity(adata= save_adata,
                                    velocity_clusters = vclusters_to_plot,
                                    title = "velocity_sender_influences.png")
@@ -133,7 +132,7 @@ plot_sender_influence_velocity(adata= save_adata,
 
 
 ```{r Sender influence, echo=FALSE}
-knitr::include_graphics("entrain_velocity_influence.png")
+knitr::include_graphics("figures/entrain_velocity_influence.png")
 ```
 #### Visualizing ligand importances
 Visualization of ligands and their relative importances, or contribution, towards each `vcluster`.
@@ -160,7 +159,7 @@ g<-plot_velocity_ligand_targets(obj_v, vcluster="vcluster1", n_top_ligands=10L, 
 g
 ```
 ```{r Ligand Targets show, echo=FALSE}
-knitr::include_graphics("velocity_targets.png")
+knitr::include_graphics("figures/velocity_targets.png")
 ```
 
 #### Circos plot
@@ -168,10 +167,10 @@ knitr::include_graphics("velocity_targets.png")
 weighted_networks <- readRDS(url("https://zenodo.org/record/7233173/files/weighted_networks_mm.rds"))
 ```
 ```{r, echo=FALSE}
-weighted_networks <- readRDS("../data/weighted_networks_mm.rds")
+weighted_networks <- readRDS("../../entrain_vignette_data/weighted_networks_mm.rds")
 ```
 
-``` {r show plot, fig.width=5, fig.height=5}
+``` {r show plot, fig.width=5, fig.height=5, fig.align='center'}
 draw_entrain_circos(obj = obj_v,
                     vcluster= "vcluster3",
                     lr_network = lr_network_mm,

@@ -158,7 +158,7 @@ cluster.</li>
 </ol>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adata</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/entrain_cluster_velocities.html">entrain_cluster_velocities</a></span><span class="op">(</span><span class="va">h5ad_path</span>, resolution<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="entrain_velocity_clusters.png" width="692"></p>
+<p><img src="figures/entrain_velocity_clusters.png" width="692"></p>
 <p>We can see that the velocity clusters roughly, but not exactly,
 correspond to cell type clusters, indicating that velocities are
 moderately correlated with cell type.</p>
@@ -178,7 +178,7 @@ afterwards.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sender_cluster_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Blood"</span>, <span class="st">"Fibroblast"</span>, <span class="st">"Immune"</span>, <span class="st">"Mesoderm"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://mojaveazure.github.io/seurat-object/reference/Idents.html" class="external-link">Idents</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Class"</span></span>
-<span><span class="va">save_adata</span> <span class="op">=</span>  <span class="st">"../data/manno_entrain_result.h5ad"</span></span>
+<span><span class="va">save_adata</span> <span class="op">=</span>  <span class="st">"../../entrain_vignette_data/manno_entrain_result.h5ad"</span></span>
 <span><span class="va">obj_v</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/entrain_velocity.html">entrain_velocity</a></span><span class="op">(</span>receiver_obj <span class="op">=</span> <span class="va">obj</span>,</span>
 <span>                          adata <span class="op">=</span> <span class="va">adata</span>,</span>
 <span>                          save_adata <span class="op">=</span> <span class="va">save_adata</span>,</span>
@@ -201,9 +201,9 @@ that negative variance explained denotes poor model accuracy.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_velocity_ligands.html">plot_velocity_ligands</a></span><span class="op">(</span>adata<span class="op">=</span><span class="va">save_adata</span>,</span>
 <span>                      plot_output_path <span class="op">=</span> <span class="st">"manno_entrain.png"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="manno_entrain.png" width="1500"> This suggests a number
-of ligands responsible for neurogenic differentiation processes. These
-are well-established in literature as key drivers for cell
+<p><img src="figures/manno_entrain.png" width="1500"> This suggests a
+number of ligands responsible for neurogenic differentiation processes.
+These are well-established in literature as key drivers for cell
 differentiation.</p>
 </div>
 <div class="section level4">
@@ -221,12 +221,12 @@ analysis. Cells are coloured based on mean expression of the
 velocity cluster.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vclusters_to_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vcluster0"</span>, <span class="st">"vcluster1"</span>, <span class="st">"vcluster2"</span>, <span class="st">"vcluster3"</span><span class="op">)</span></span>
-<span><span class="va">save_adata</span> <span class="op">=</span>  <span class="st">"../data/manno_entrain.h5ad"</span></span>
+<span><span class="va">save_adata</span> <span class="op">=</span>  <span class="st">"../../entrain_vignette_data/manno_entrain.h5ad"</span></span>
 <span><span class="fu"><a href="../reference/plot_sender_influence_velocity.html">plot_sender_influence_velocity</a></span><span class="op">(</span>adata<span class="op">=</span> <span class="va">save_adata</span>,</span>
 <span>                                   velocity_clusters <span class="op">=</span> <span class="va">vclusters_to_plot</span>,</span>
 <span>                                   title <span class="op">=</span> <span class="st">"velocity_sender_influences.png"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="entrain_velocity_influence.png" width="4800"> ####
-Visualizing ligand importances Visualization of ligands and their
+<p><img src="figures/entrain_velocity_influence.png" width="4800">
+#### Visualizing ligand importances Visualization of ligands and their
 relative importances, or contribution, towards each
 <code>vcluster</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -265,7 +265,7 @@ the <code>n_top_targets</code> high velocity likelihood genes.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">g</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/plot_velocity_ligand_targets.html">plot_velocity_ligand_targets</a></span><span class="op">(</span><span class="va">obj_v</span>, vcluster<span class="op">=</span><span class="st">"vcluster1"</span>, n_top_ligands<span class="op">=</span><span class="fl">10L</span>, ligand_target_matrix<span class="op">=</span><span class="va">ligand_target_matrix_mm</span><span class="op">)</span></span>
 <span><span class="va">g</span></span></code></pre></div>
-<p><img src="velocity_targets.png" width="1500"></p>
+<p><img src="figures/velocity_targets.png" width="1500"></p>
 </div>
 <div class="section level5">
 <h5 id="circos-plot">Circos plot<a class="anchor" aria-label="anchor" href="#circos-plot"></a>
@@ -277,7 +277,7 @@ the <code>n_top_targets</code> high velocity likelihood genes.</p>
 <span>                    vcluster<span class="op">=</span> <span class="st">"vcluster3"</span>,</span>
 <span>                    lr_network <span class="op">=</span> <span class="va">lr_network_mm</span>,</span>
 <span>                    weighted_networks <span class="op">=</span> <span class="va">weighted_networks</span><span class="op">)</span></span></code></pre></div>
-<p><img src="entrain_velo_files/figure-html/show%20plot-1.png" width="480"></p>
+<p><img src="entrain_velo_files/figure-html/show%20plot-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
 </div>

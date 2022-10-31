@@ -368,9 +368,6 @@ plot_principal_graph <- function(cds,
     g <- g + geom_point(color=data_df$chosen_cells, size=I(cell_size),
                         na.rm = TRUE, alpha = I(alpha))
     
-    message(paste("cluster_cells() has not been called yet, can't color cells",
-                  "by cluster"))
-    
     g <- g + geom_point(aes(x = x, y = y, color = chosen), data=princ_points) +
         scale_color_manual(values = c("Start" = "green", "End" = "blue",
                                       "Unchosen" = "black", "Chosen" = "purple"))
