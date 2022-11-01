@@ -303,7 +303,7 @@ def plot_velocity_ligands_python(adata,
     if type(adata) == str:
         adata = ad.read_h5ad(adata)
     
-    top_n_ligands = int(top_n_ligands)    
+    top_n_ligands = int(top_n_ligands)  
 
     if velocity_clusters is not None:
         if np.all(np.isin(velocity_clusters, adata.obs[velocity_cluster_key].unique())):
@@ -315,7 +315,7 @@ def plot_velocity_ligands_python(adata,
         velocity_clusters = vcluster_counts[vcluster_counts > (signif_cluster_pct_cutoff * adata.n_obs)].index.to_numpy()
     else:    
         velocity_clusters = adata.obs[velocity_cluster_key].unique()          
-    
+
     if plot_negative_VE == False:
         var_exp_df =  adata.uns["entrain_velocity_ligands"]["variance_explained"]
         var_exp_df.columns = [velocity_cluster_key, "var_exp"]
@@ -334,11 +334,20 @@ def plot_velocity_ligands_python(adata,
                                                     )
     plt.clf()
 
+    num_velo_clusters = len(velocity_clusters)  
+
     emb_x_range = adata.obsm[f"X_{basis}"][:,0].max() - adata.obsm[f"X_{basis}"][:,0].min()
     emb_y_range = adata.obsm[f"X_{basis}"][:,1].max() - adata.obsm[f"X_{basis}"][:,1].min()      
 
     ax = plt.axes()
-    arrow_colormap = cm.get_cmap(velocity_cluster_palette, len(velocity_clusters))
+
+    # arrow colors
+    if type(velocity_cluster_palette) == str:
+        arrow_colormap = cm.get_cmap(velocity_cluster_palette, num_velo_clusters)
+        arrow_colors = [arrow_colormap(float(i) / num_velo_clusters) for i in range(num_velo_clusters)]
+    elif type(velocity_cluster_palette) == list:
+        arrow_colors = velocity_cluster_palette
+        
     adjust_for_stream = True if vector_type=="stream" else False
     for i,velocity_cluster in enumerate(velocity_clusters):
         cells = adata.obs.loc[adata.obs[velocity_cluster_key] == velocity_cluster].index
@@ -376,7 +385,7 @@ def plot_velocity_ligands_python(adata,
                                            density=(density_x, density_y),
                                            arrow_size = arrow_size,
                                            palette = cell_palette,
-                                           arrow_color = arrow_colormap(float(i)/len(velocity_clusters)), 
+                                           arrow_color = arrow_colors[i], 
                                            ax = ax,
                                            figsize = figsize,
                                            legend_loc = 'none',
@@ -406,7 +415,7 @@ def plot_velocity_ligands_python(adata,
                                            density=density_x,
                                            arrow_size = arrow_size,
                                            palette = cell_palette,
-                                           arrow_color = arrow_colormap(float(i)/len(velocity_clusters)), 
+                                           arrow_color = arrow_colors[i], 
                                            ax = ax,
                                            figsize = figsize,
                                            legend_loc = 'none',
