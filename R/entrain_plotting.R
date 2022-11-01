@@ -740,7 +740,7 @@ plot_sender_influence_velocity <- function(adata,
 #' @param top_n_ligands Number of top ligands to include in each label.
 #' @param velocity_clusters Values in `adata.obs.velocity_cluster_key` denoting which velocity clusters and their ligands to visualize. Defaults to NULL, in which it will plot the ligands for all positive variance explained velocity clusters
 #' @param velocity_cluster_key Column name of `adata.obs` metadata denoting velocity clusters.
-#' @param velocity_cluster_palette A matplotlib color palette denoting colorscale of velocity clusters. 
+#' @param velocity_cluster_palette A matplotlib color palette denoting colorscale of velocity clusters e.g., `"Spectral"`. OR: A vector of hex codes with the same length as the number of velocity clusters being plotted e.g., `c("#bfe5a0", "#9e0242", "#d8434e", "#f67b4a", "#5e4fa2")`.
 #' @param color scvelo.pl argument: Key for annotations of observations/cells or variables/genes. Use if you want dot color to denote a cell type or other annotation. Default is `dimgrey`, no annotation colors.
 #' @param cell_palette A matplotlib color palette for annotations denoted in argument `color`.
 #' @param alpha Opacity of points.

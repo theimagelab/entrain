@@ -347,6 +347,8 @@ def plot_velocity_ligands_python(adata,
         arrow_colors = [arrow_colormap(float(i) / num_velo_clusters) for i in range(num_velo_clusters)]
     elif type(velocity_cluster_palette) == list:
         arrow_colors = velocity_cluster_palette
+        if len(velocity_cluster_palette) != num_velo_clusters:
+            raise ValueError("Number of arrow colors: " + str(arrow_colors) + " does not match the number of velocity clusters being plotted: " + str(velocity_clusters))
         
     adjust_for_stream = True if vector_type=="stream" else False
     for i,velocity_cluster in enumerate(velocity_clusters):
