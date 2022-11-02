@@ -47,7 +47,8 @@ assign_branch_to_nodes <- function(skeleton, principal_igraph) {
                                 from = p1,
                                 to = p2,
                                 mode = 'all',
-                                output ="both")
+                                output ="both",
+                                weights=NA)
         branch_nodes <- names(branch$vpath[[1]])
         branch_name <- paste(p1, p2, sep=".")
         indices <- match( branch_nodes, principal_nodes$vertex) 
@@ -85,7 +86,8 @@ cells_between_vertices <- function(endpoint_nodes, cds) {
                                     from = p1,
                                     to = p2,
                                     mode = 'all',
-                                    output ="both")
+                                    output ="both",
+                                  weights=NA)
     path_nodes <- names(path$vpath[[1]])
     cell_to_vertex_df %>%
         filter(vertex_name %in% path_nodes) %>%
@@ -118,7 +120,7 @@ assign_nodes_to_single_path <- function(branch_endpoints, skeleton, principal_ig
 
 #' @noRd
 get_branch_membership <- function(cds, reduction_method="UMAP") {
-    principal_igraph <- cds@principal_graph$UMAP
+    principal_igraph <- cds@principal_graph[[reduction_method]]
     skeleton <- get_skeleton(principal_igraph) #create skeleton graph
     # each edge on skeleton is a branch.
     
@@ -576,7 +578,9 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
         }
         else {
             message("Using pre-generated Monocle trajectory in argument cds.")
-            if (!is.null(root_cells) & is.null(root_pr_nodes) ) {
+            if (is.null(root_cells) == TRUE & is.null(root_pr_nodes) == TRUE ) {
+                cds <- monocle3::order_cells(cds_graph)
+            } else if (!is.null(root_cells) & is.null(root_pr_nodes) ) {
                 message("Ordering cells with argument root_cells. If you have already run monocle3::order_cells(), set root_cells = NULL and root_pr_nodes = NULL.")
                 cds <- monocle3::order_cells(cds, root_cells = root_cells)
             } else if (!is.null(root_pr_nodes) & is.null(root_cells) ) {
@@ -590,10 +594,10 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
             colnames(cds_embedding) <- c("Monocle_1", "Monocle_2")
             obj[[reduction_key]]<-Seurat::CreateDimReducObject(embeddings = cds_embedding , key = reduction_key, assay = DefaultAssay(obj))
         }
-        cds <- get_branch_membership(cds)
+        #cds <- get_branch_membership(cds)
         
         
-        obj <- add_branch_data_to_seuobj(cds, obj)
+        #obj <- add_branch_data_to_seuobj(cds, obj)
         obj@misc$monocle_graph <- cds@principal_graph_aux$UMAP
     }
     else {

@@ -38,5 +38,6 @@ Suggests:
     imputeTS,
     knitr,
     monocle3,
+    R.utils,
     reticulate,
     rmarkdown

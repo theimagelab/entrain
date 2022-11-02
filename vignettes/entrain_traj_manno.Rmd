@@ -5,10 +5,11 @@ title: "Entrain ligand-trajectory analysis"
 This document outlines a basic Entrain analysis starting from a Seurat object. By the end of this document, you will identify ligands that are driving the trajectories in your data.
 
 **Prior assumptions:**
-Entrain-Trajectory Analysis work best when:
+Entrain-Trajectory Analysis requires the following:
 
-1. You have an idea of which cell clusters comprise the 'niche', or ligand-expressing cells, in your dataset.
-2. Your dataset has sufficiently sampled cells from all beginning, intermediate and terminal stages in the differentiation continuum.
+1. You have Single-Cell RNA data on a dataset of cells differentiating as well as data on their microenvironmental niche. The niche can be contained in a separate dataset (e.g., if you have sequenced in a separate capture) or in the same dataset as the differentiating cells.
+2. You have an idea of which cell clusters comprise the 'niche', or ligand-expressing cells, in your dataset.
+3. Your dataset has sufficiently sampled cells from all beginning, intermediate and terminal stages in the differentiation continuum. If not, your analysis will be spurious during the trajectory learning step.
 
 # Pre-processing and loading required data.
 
@@ -138,13 +139,14 @@ monocle_cds <- monocle3::learn_graph(monocle_cds,
 
 Since this is run in a script, we cannot view the trajectory interactively. Instead, the below code saves the trajectory and node labels to `.png`. You can then download the `.png` from the cluster and open it on your local machine. This allows you to validate that the trajectory makes biological sense before running Entrain analysis, and if so, shows you the node labels that you will need to run Entrain without a GUI.
 ```{r, eval=FALSE}
+library("ggplot2")
 node_coords <- monocle_cds@principal_graph_aux$UMAP$dp_mst %>% t() %>% as.data.frame() %>%
     mutate(node = rownames(.)) %>% stats::setNames(c("x", "y", "node"))
 fig<-monocle3::plot_cells(monocle_cds, color_cells_by="Class") +
     geom_point(data = node_coords, aes(x=x, y=y)) +
-    ggrepel::geom_text_repel(data = node_coords, aes(x=x, y=y, label=node)
+    ggrepel::geom_text_repel(data = node_coords, aes(x=x, y=y, label=node),
                              size=2.5)
-ggsave(fig, "monocle_plot.png")
+ggsave("monocle_plot.png", fig )
 ```
 
 ``` {r, warning=FALSE, echo=FALSE}

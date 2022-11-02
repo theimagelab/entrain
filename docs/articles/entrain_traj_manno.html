@@ -78,13 +78,20 @@
 <p>This document outlines a basic Entrain analysis starting from a
 Seurat object. By the end of this document, you will identify ligands
 that are driving the trajectories in your data.</p>
-<p><strong>Prior assumptions:</strong> Entrain-Trajectory Analysis work
-best when:</p>
+<p><strong>Prior assumptions:</strong> Entrain-Trajectory Analysis
+requires the following:</p>
 <ol style="list-style-type: decimal">
+<li>You have Single-Cell RNA data on a dataset of cells differentiating
+as well as data on their microenvironmental niche. The niche can be
+contained in a separate dataset (e.g., if you have sequenced in a
+separate capture) or in the same dataset as the differentiating
+cells.</li>
 <li>You have an idea of which cell clusters comprise the ‘niche’, or
 ligand-expressing cells, in your dataset.</li>
 <li>Your dataset has sufficiently sampled cells from all beginning,
-intermediate and terminal stages in the differentiation continuum.</li>
+intermediate and terminal stages in the differentiation continuum. If
+not, your analysis will be spurious during the trajectory learning
+step.</li>
 </ol>
 </div>
 <div class="section level2">

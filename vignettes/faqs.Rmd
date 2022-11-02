@@ -30,3 +30,39 @@ Overall, negative variance explained does not mean the ligands are automatically
 ### What is a 'good' variance explained?
 Biologically, it does not make sense to have a large amount of gene expression (e.g. >30% variance) to be under the influence of environmental factors. The majority of variance in gene expression, from cell to cell, is unlikely to be directly caused by their environment. 
 
+## Install Errors
+
+### Errors installing Monocle3 on an Apple Silicon Mac.
+As of Oct 2022, I found Monocle3 quite difficult to install on my 2021 M1 MacBook because some of it's dependencies did not have compatibility with Arm64 processors. To get around this, I created an x86_64 terminal shortcut that runs through Apple's Rosetta platform. This emulates an x86_64 Intel processor. I also used `mamba` to keep the x86_64 packages separate from the Apple Silicon-compatible packages.
+
+The following assumes you have `conda` installed. 
+
+1. Go into Mac Applications folder and find `Terminal` or `iTerm`. 
+2. Right click it and Duplicate it, calling it `iTerm x86_64`
+3. Right click `iTerm x86_64`, click `Get Info`, and tick the box saying "Open Using Rosetta".
+
+Next, open `iTerm x86_64` and type `uname -m`. It should say `x86_64`. With that confirmed, type the following lines **one at a time** into your `x86_64` terminal:
+```{bash, eval=FALSE}
+conda create -n x86_64
+conda activate x86_64
+conda env config vars set CONDA_SUBDIR=osx-64
+export PATH=$base_dir/miniconda/bin:$PATH
+conda deactivate
+conda activate x86_64
+
+mamba install r-seurat r-monocle3 r-devtools r-biocmanager
+```
+
+Now open up R and check that it has run smoothly by opening R in your terminal typing the following:
+```
+R.Version()$system
+R.home()
+```
+It should say `x86_64`, and R.home() points to an anaconda directory instead of your default system R.
+
+You may also need to install GenomeInfoDb
+```{r, eval=FALSE }
+BiocManager::install("GenomeInfoDbData")
+```
+
+

@@ -78,10 +78,21 @@
 <p>This document outlines a basic Entrain analysis starting from an
 <code>scverse</code> <code>anndata</code> object with pre-calculated
 velocities. By the end of this document, you will identify ligands that
-are driving the velocities in your data. ### Prior knowledge required 1.
-a reasonable idea of which cell clusters comprise the ‘niche’, or
-ligand-expressing cells, in your dataset. 2. a .h5ad object produced by
-scvelo that contains velocity data.</p>
+are driving the velocities in your data.</p>
+<p><strong>Prior assumptions:</strong> Entrain-Velocity Analysis
+requires the following:</p>
+<ol style="list-style-type: decimal">
+<li>Single-Cell RNA data on a dataset of cells differentiating as well
+as data on their microenvironmental niche. The niche can be contained in
+a separate dataset (e.g., if you have sequenced in a separate capture)
+or in the same dataset as the differentiating cells.</li>
+<li>A <code>.h5ad</code> object produced by scvelo that contains robust
+velocity data. Please ensure that your biology you are interested in is
+conducive to <a href="https://doi.org/10.15252/msb.202110282" class="external-link">producing
+trustworthy velocities.</a>.</li>
+<li>You have (some) idea of which cell clusters comprise the ‘niche’, or
+ligand-expressing cells, in your dataset.</li>
+</ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"Seurat"</span>); <span class="fu">library</span>(<span class="st">"SeuratWrappers"</span>);<span class="fu">library</span>(<span class="st">"reticulate"</span>); <span class="fu">library</span>(<span class="st">"dplyr"</span>), <span class="fu">library</span>(<span class="st">"circlize"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"entrain"</span>)</span></code></pre></div>
 <div class="section level3">
