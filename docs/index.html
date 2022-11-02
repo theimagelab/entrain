@@ -64,7 +64,7 @@
 <p>Entrain is an R package for analysis of single-cell RNA sequencing data.</p>
 <p>The purpose of Entrain is to predict how the cellular environment shapes cellular differentiation, and quantify the relative contribution of cell-cell communication versus cell-intrinsic mechanisms towards cell fate specification. If you have a dataset of cells that lie along a differentiation trajectory, and/or exhibit robust RNA velocity dynamics, then Entrain will help you generate hypotheses for identifying the environmental signals that are driving your observed dynamics.</p>
 <p>As input, Entrain takes single-cell RNA sequencing data (and optionally, RNA velocities), and integrates with the regulatory databases to predict how cell-cell communication can play a role in cellular maturation and decision making.</p>
-<p>Entrain is based on, and can be considered a unification, of three previously separate streams of single-cell analysis: Trajectory Analysis (with <code>monocle3</code>), Cell-Cell regulation (with <code>NicheNet</code>), and RNA Velocity (with <code>scvelo</code>). Furthermore, Entrain works directly with popular single-cell data types, namely <code>Seurat</code> objects and <code>anndata</code> objects.</p>
+<p>Entrain is based on, and can be considered a unification, of three previously separate streams of single-cell analysis: Trajectory Analysis (with <code>monocle3</code>), cell-cell communication/regulation (with <code>NicheNet</code>), and RNA Velocity (with <code>scvelo</code>). Furthermore, Entrain works directly with popular single-cell data types, namely <code>Seurat</code> objects and <code>anndata</code> objects.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -84,6 +84,15 @@
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">conda_install</span>(<span class="st">"r-reticulate-sc"</span>, <span class="st">"scvelo"</span>, <span class="at">channel=</span><span class="st">"bioconda"</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>reticulate<span class="sc">::</span><span class="fu">use_condaenv</span>(<span class="st">"r-reticulate-sc"</span>)</span></code></pre></div>
 </div>
+</div>
+<div class="section level1">
+<h1 id="using-entrain">Using Entrain<a class="anchor" aria-label="anchor" href="#using-entrain"></a>
+</h1>
+<p>Entrain has two types of analysis. Read one of the example vignettes to learn how to use Entrain.</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="articles/entrain_traj_manno.html">Analysis of Pseudotime-based trajectories.</a></p></li>
+<li><p><a href="articles/entrain_velo.html">Analysis of RNA Velocity-based trajectories.</a></p></li>
+</ol>
 </div>
 
   </main><aside class="col-md-3"><div class="license">

@@ -5,9 +5,13 @@ title: "Entrain ligand-velocity analysis"
 # Entrain ligand-velocity analysis from an Anndata object. 
 
 This document outlines a basic Entrain analysis starting from an `scverse` `anndata` object with pre-calculated velocities. By the end of this document, you will identify ligands that are driving the velocities in your data.
-### Prior knowledge required
-1. a reasonable idea of which cell clusters comprise the 'niche', or ligand-expressing cells, in your dataset. 
-2. a .h5ad object produced by scvelo that contains velocity data.  
+
+**Prior assumptions:**
+Entrain-Velocity Analysis requires the following:
+1. Single-Cell RNA data on a dataset of cells differentiating as well as data on their microenvironmental niche. The niche can be contained in a separate dataset (e.g., if you have sequenced in a separate capture) or in the same dataset as the differentiating cells.
+2. A `.h5ad` object produced by scvelo that contains robust velocity data. Please ensure that your biology you are interested in is conducive to [producing trustworthy velocities.](https://doi.org/10.15252/msb.202110282).
+3. You have (some) idea of which cell clusters comprise the 'niche', or ligand-expressing cells, in your dataset. 
+
 
 ```{r Libraries, results='hide', message=FALSE, eval=FALSE, warning=FALSE}
 library("Seurat"); library("SeuratWrappers");library("reticulate"); library("dplyr"), library("circlize")
