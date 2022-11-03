@@ -1,0 +1,17 @@
+^entrain\.Rproj$
+^\.Rproj\.user$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^LICENSE\.md$
+^entrain_traj_manno\.Rmd$
+^entrain_velo\.Rmd$
+^faqs\.Rmd$
+[.].png$
+^[\.]png$$
+^vignettes/faqs\.Rmd$
+^vignettes/entrain_velo\.Rmd$
+^vignettes/entrain_traj_manno\.Rmd$
+^[\.]png$
+^\.png$
+^./docs
