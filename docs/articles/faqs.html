@@ -126,6 +126,52 @@ environmental factors. The majority of variance in gene expression, from
 cell to cell, is unlikely to be directly caused by their
 environment.</p>
 </div>
+<div class="section level3">
+<h3 id="install-errors">Install Errors<a class="anchor" aria-label="anchor" href="#install-errors"></a>
+</h3>
+<div class="section level4">
+<h4 id="errors-installing-monocle3-on-an-apple-silicon-mac-">Errors installing Monocle3 on an Apple Silicon Mac.<a class="anchor" aria-label="anchor" href="#errors-installing-monocle3-on-an-apple-silicon-mac-"></a>
+</h4>
+<p>As of Oct 2022, I found Monocle3 quite difficult to install on my
+2021 M1 MacBook because some of it’s dependencies did not have
+compatibility with Arm64 processors. To get around this, I created an
+x86_64 terminal shortcut that runs through Apple’s Rosetta platform.
+This emulates an x86_64 Intel processor. I also used <code>mamba</code>
+to keep the x86_64 packages separate from the Apple Silicon-compatible
+packages.</p>
+<p>The following assumes you have <code>conda</code> installed.</p>
+<ol style="list-style-type: decimal">
+<li>Go into Mac Applications folder and find <code>Terminal</code> or
+<code>iTerm</code>.</li>
+<li>Right click it and Duplicate it, calling it
+<code>iTerm x86_64</code>
+</li>
+<li>Right click <code>iTerm x86_64</code>, click <code>Get Info</code>,
+and tick the box saying “Open Using Rosetta”.</li>
+</ol>
+<p>Next, open <code>iTerm x86_64</code> and type <code>uname -m</code>.
+It should say <code>x86_64</code>. With that confirmed, type the
+following lines <strong>one at a time</strong> into your
+<code>x86_64</code> terminal:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> x86_64</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate x86_64</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env config vars set CONDA_SUBDIR=osx-64</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$base_dir</span>/miniconda/bin:<span class="va">$PATH</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate x86_64</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install r-seurat r-monocle3 r-devtools r-biocmanager</span></code></pre></div>
+<p>Now open up R and check that it has run smoothly by opening R in your
+terminal typing the following:</p>
+<pre><code><span><span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">R.Version</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">system</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<p>It should say <code>x86_64</code>, and R.home() points to an anaconda
+directory instead of your default system R.</p>
+<p>You may also need to install GenomeInfoDb</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"GenomeInfoDbData"</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

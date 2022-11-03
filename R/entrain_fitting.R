@@ -230,6 +230,15 @@ get_ligand_trajectory_scores <- function(pseudotime_associated_genes_bool, activ
     list(importances, pseudotime_associated_genes_bool, rf)
 }
 
+add_pseudotime_data_to_seuobj <- function(cds,
+                                          obj,
+                                          reduction_method = "UMAP") {
+    obj@meta.data$pseudotime<-cds@colData$pseudotime
+    obj@meta.data$vertex <- cds@principal_graph_aux$UMAP$pr_graph_cell_proj_closest_vertex[,1]
+    obj@misc$entrain$dp_mst <- cds@principal_graph_aux[[reduction_method]]$dp_mst
+    return(obj)
+}
+
 #' @noRd
 add_branch_data_to_seuobj <- function(cds, 
                                       obj,
@@ -241,9 +250,6 @@ add_branch_data_to_seuobj <- function(cds,
     }
     
     obj@meta.data$branch <- cds@colData$branch
-    obj@meta.data$pseudotime<-cds@colData$pseudotime
-    obj@meta.data$vertex <- cds@principal_graph_aux$UMAP$pr_graph_cell_proj_closest_vertex[,1]
-    obj@misc$entrain$dp_mst <- cds@principal_graph_aux[[reduction_method]]$dp_mst
     return(obj)
 }
 
@@ -595,9 +601,8 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
             obj[[reduction_key]]<-Seurat::CreateDimReducObject(embeddings = cds_embedding , key = reduction_key, assay = DefaultAssay(obj))
         }
         #cds <- get_branch_membership(cds)
-        
-        
         #obj <- add_branch_data_to_seuobj(cds, obj)
+        obj <- add_pseudotime_data_to_seuobj(cds,obj)
         obj@misc$monocle_graph <- cds@principal_graph_aux$UMAP
     }
     else {
