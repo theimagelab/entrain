@@ -76,7 +76,6 @@ def plot_sender_influence_velocity_python(adata,
                                   density=None,
                                   arrow_length=2,
                                   arrow_size=3,
-                                  velocity_cluster_palette = "Spectral",
                                   sender_palette = "OrRd",
                                   filename = "entrain_velocity_influence.png",
                                   vector_type = "stream",
@@ -343,8 +342,13 @@ def plot_velocity_ligands_python(adata,
 
     # arrow colors
     if type(velocity_cluster_palette) == str:
-        arrow_colormap = cm.get_cmap(velocity_cluster_palette, num_velo_clusters)
-        arrow_colors = [arrow_colormap(float(i) / num_velo_clusters) for i in range(num_velo_clusters)]
+        if velocity_cluster_palette in mpl.colormaps():
+            arrow_colormap = cm.get_cmap(velocity_cluster_palette, num_velo_clusters)
+            arrow_colors = [arrow_colormap(float(i) / num_velo_clusters) for i in range(num_velo_clusters)]
+        elif velocity_cluster_palette in mpl.colors.CSS4_COLORS.keys():
+            arrow_colors = [velocity_cluster_palette for i in range(num_velo_clusters)]
+        else:
+            raise ValueError("velocity_cluster_palette argument does not match a matplotlib color name. Valid names are: " + str(mpl.colors.CSS4_COLORS.keys()))
     elif type(velocity_cluster_palette) == list:
         arrow_colors = velocity_cluster_palette
         if len(velocity_cluster_palette) != num_velo_clusters:
