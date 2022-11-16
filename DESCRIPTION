@@ -20,7 +20,6 @@ Imports:
     Matrix,
     randomForest,
     Seurat,
-    SeuratWrappers,
     shades,
     shiny,
     DT,
@@ -31,13 +30,14 @@ Imports:
     tibble,
     RColorBrewer,
     tidyr,
-    SingleCellExperiment,
     methods
 Suggests: 
     circlize,
     imputeTS,
     knitr,
     monocle3,
+    SeuratWrappers,
+    SingleCellExperiment,
     R.utils,
     reticulate,
     rmarkdown
