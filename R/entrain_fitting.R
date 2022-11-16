@@ -535,8 +535,8 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                                      covariance_cutoff = 0.05,
                                      lr_network, ligand_target_matrix, export_cds=TRUE
 ) {
-    if (!requireNamespace("monocle3", quietly = TRUE)) {
-        stop("Please install monocle3 to use get_traj_ligands_monocle")  
+    if (!requireNamespace("monocle3", quietly = TRUE) | requireNamespace("SeuratWrappers", quietly = TRUE) | requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+        stop("Please install monocle3, SeuratWrappers and SingleCellExperiment to use get_traj_ligands_monocle")  
     }
     
     if (is.null(obj@misc$monocle_graph) || overwrite==TRUE ) {
