@@ -352,7 +352,7 @@ plot_ligand_trajectories <- function(obj, color_cells_by = 'pseudotime', n_top_l
                                      label_font_size=4,
                                      cds=NULL) {
     paths <- names(obj@misc$entrain$paths)
-    
+
     if (is.null(cds)) {
         cds<-obj@misc$entrain$monocle_cds
     }
@@ -404,7 +404,10 @@ plot_ligand_influences <- function(obj,
                                    n_top_ligands = 5,
                                    label_font_size = 4,
                                    label_position = "endpoint") {
-    influences_columns <- colnames(obj@meta.data)[grep("Influences_", colnames(obj@meta.data))]
+    
+    meta_cols <- colnames(obj@meta.data)
+    influences_columns <- meta_cols[grep("Influences_", meta_cols)]
+    
     influence_data<-obj@meta.data[c(influences_columns)]
     
     reduction_names<-names(obj@reductions[[reduction]])
@@ -455,6 +458,7 @@ plot_ligand_influences <- function(obj,
     
     if (ligand_labels==TRUE) {
         paths<-names(obj@misc$entrain$paths)
+
         labels_df <- get_ligand_plot_labels(obj,
                                             n_top_ligands,
                                             paths,
@@ -740,8 +744,8 @@ plot_sender_influence_velocity <- function(adata,
 #' @param top_n_ligands Number of top ligands to include in each label.
 #' @param velocity_clusters Values in `adata.obs.velocity_cluster_key` denoting which velocity clusters and their ligands to visualize. Defaults to NULL, in which it will plot the ligands for all positive variance explained velocity clusters
 #' @param velocity_cluster_key Column name of `adata.obs` metadata denoting velocity clusters.
-#' @param velocity_cluster_palette A matplotlib color palette denoting colorscale of velocity clusters e.g., `"Spectral"`. OR: A vector of hex codes with the same length as the number of velocity clusters being plotted e.g., `c("#bfe5a0", "#9e0242", "#d8434e", "#f67b4a", "#5e4fa2")`.
-#' @param color scvelo.pl argument: Key for annotations of observations/cells or variables/genes. Use if you want dot color to denote a cell type or other annotation. Default is `dimgrey`, no annotation colors.
+#' @param velocity_cluster_palette A matplotlib color palette denoting colorscale of velocity clusters e.g., `"Spectral"`. OR a single color in `matplotlib.colors.CSS4_COLORS.keys()` e.g. `"black"`;  OR: A vector of hex codes with the same length as the number of velocity clusters being plotted e.g., `c("#bfe5a0", "#9e0242", "#d8434e", "#f67b4a", "#5e4fa2")`.
+#' @param color scvelo.pl argument: Key for annotations of observations/cells or variables/genes. Use if you want dot color to denote a cell type or other annotation. Default is `NULL` - all cells are colored a single color denoted by argument `cell_palette`
 #' @param cell_palette A matplotlib color palette for annotations denoted in argument `color`.
 #' @param alpha Opacity of points.
 #' @param density Density of RNA velocity vectors. 

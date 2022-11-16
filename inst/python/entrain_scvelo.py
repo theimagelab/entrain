@@ -516,6 +516,9 @@ def get_velocity_cluster_label_positions(adata,
 
 def plot_velocity_clusters(adata_clustered, plot_file, velocity_cluster_key, vector_type="stream", **kwargs):
 
+    if type(adata_clustered) == str:
+        adata_clustered = ad.read_h5ad(adata_clustered)
+    
     if vector_type == "stream": 
                     
         plot = scv.pl.velocity_embedding_stream(adata_clustered, 
