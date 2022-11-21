@@ -264,9 +264,6 @@ get_velocity_ligands <- function(obj,
         
         var_exp_df <- rbind(var_exp_df, c(vclust, var_exp))
         
-        if (any(vclust_df$ligand == "a")) {
-            browser()
-        }
     }
     
     colnames(var_exp_df) <- c("velocity_cluster", "variance_explained")
