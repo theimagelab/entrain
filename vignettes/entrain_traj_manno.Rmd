@@ -27,7 +27,7 @@ devtools::load_all()
 We will download a developing mouse brain atlas dataset at gestation day 10/11. The following code block downloads the .gz file to the working directory, decompresses it, and converts it into a Seurat object for analysis.
 ```{r Read dataset show, warning=FALSE, message=FALSE, results='hide', eval=FALSE}
 options(timeout=3600)
-#download.file("https://zenodo.org/record/7233173/files/Manno_E10_E11.rds", "Manno_E10_E11.rds")
+#download.file("https://zenodo.org/record/7340143/files/Manno_E10_E11.rds", "Manno_E10_E11.rds")
 obj <- readRDS("Manno_E10_E11.rds")
 ```
 
@@ -38,8 +38,8 @@ obj <- readRDS("../../entrain_vignette_data/Manno_E10_E11.rds")
 Entrain relies on the NicheNet database of ligand-receptor-gene networks for the prior knowledge needed to make conclusions about environmentally-influenced trajectories.
 The genes here have been pre-converted from the original human genes to mouse orthologs.
 ```{r Read NicheNet show, results='hide', eval=FALSE}
-lr_network_mm <- readRDS(url("https://zenodo.org/record/7233173/files/lr_network_mm.rds")) #
-ligand_target_matrix_mm <- readRDS(url("https://zenodo.org/record/7233173/files/ligand_target_matrix_mm.rds"))
+lr_network_mm <- readRDS(url("https://zenodo.org/record/7340143/files/lr_network_mm.rds")) #
+ligand_target_matrix_mm <- readRDS(url("https://zenodo.org/record/7340143/files/ligand_target_matrix_mm.rds"))
 ```
 ```{r Read NicheNet, echo=FALSE, results='hide', class.source = 'fold-show'}
 lr_network_mm <- readRDS("../../entrain_vignette_data/lr_network_mm.rds")

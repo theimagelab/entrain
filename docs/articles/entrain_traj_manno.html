@@ -115,15 +115,15 @@ working directory, decompresses it, and converts it into a Seurat object
 for analysis.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">3600</span><span class="op">)</span></span>
-<span><span class="co">#download.file("https://zenodo.org/record/7233173/files/Manno_E10_E11.rds", "Manno_E10_E11.rds")</span></span>
+<span><span class="co">#download.file("https://zenodo.org/record/7340143/files/Manno_E10_E11.rds", "Manno_E10_E11.rds")</span></span>
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"Manno_E10_E11.rds"</span><span class="op">)</span></span></code></pre></div>
 <p>Entrain relies on the NicheNet database of ligand-receptor-gene
 networks for the prior knowledge needed to make conclusions about
 environmentally-influenced trajectories. The genes here have been
 pre-converted from the original human genes to mouse orthologs.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lr_network_mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/7233173/files/lr_network_mm.rds"</span><span class="op">)</span><span class="op">)</span> <span class="co">#</span></span>
-<span><span class="va">ligand_target_matrix_mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/7233173/files/ligand_target_matrix_mm.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">lr_network_mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/7340143/files/lr_network_mm.rds"</span><span class="op">)</span><span class="op">)</span> <span class="co">#</span></span>
+<span><span class="va">ligand_target_matrix_mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/7340143/files/ligand_target_matrix_mm.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="data-at-a-glance">Data at a glance<a class="anchor" aria-label="anchor" href="#data-at-a-glance"></a>

@@ -89,7 +89,7 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
         }
     }
     
-    receiver_obj<-intersect_seurat_adata(receiver_obj, adata)
+    receiver_obj <- intersect_seurat_adata(receiver_obj, adata)
     
     if ("vcluster" %in% names(adata$obs)) {
         adata_clustered <- adata
@@ -156,9 +156,9 @@ entrain_velocity <- function(receiver_obj, sender_obj = NULL,
 #' @param save_adata Optional. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo.
 #' @param velocity_cluster_key Column name of the cluster labels in the metadata of adata_clustered. Can be calculated manually in scvelo with scvelo.tl.velocity_clusters(). 
 #' @param resolution Optional argument defining resolution of velocity clustering. Default 0.05.
-#' @param plot_file Plot file name. Default is "velocity_clusters.png".
-#' @param vector_type Vector types to plot. Only used with plot_file is not NULL. Either "grid" or "stream". Default "stream".
-#' @param reduction_key Dimension reduction to plot. Only use when plot_file is not NULL.
+#' @param plot_output_path Plot file name. Default is "velocity_clusters.png".
+#' @param vector_type Vector types to plot. Only used with plot_output_path is not NULL. Either "grid" or "stream". Default "stream".
+#' @param reduction_key Dimension reduction to plot. Only use when plot_output_path is not NULL.
 #' @param ... Arguments to pass to `scvelo.pl.velocity_embedding_stream()` or `scvelo.pl.velocity_embedding_grid()`, depending on `vector_type`
 
 #' @return Anndata object with velocity clusters denoted in adata.obs.<velocity_cluster_key>
@@ -168,7 +168,7 @@ entrain_cluster_velocities <- function(adata,
                                        velocity_cluster_key = "vcluster",
                                        resolution = 0.05,
                                        save_adata = NULL,
-                                       plot_file = "velocity_clusters.png",
+                                       plot_output_path = "velocity_clusters.png",
                                        vector_type = "stream",
                                        reduction_key = NULL,
                                        ...) {
@@ -195,11 +195,11 @@ entrain_cluster_velocities <- function(adata,
                                           )
     if (!is.null(plot_file)) {
         plot_velocity_clusters(adata_clustered = adata_clustered,
-                               plot_file = plot_file,
+                               plot_output_path = plot_output_path,
                                velocity_cluster_key = velocity_cluster_key,
                                vector_type = vector_type,
                                ...)
-        message(paste0("Clustered velocities plotted: ", plot_file))
+        message(paste0("Clustered velocities plotted: ", plot_output_path))
     }
     
     return(adata_clustered)
@@ -228,7 +228,7 @@ get_velocity_ligands <- function(obj,
     likelihood_df$gene <- likelihood_df$gene %>% as.character()
     
     var_exp_df <- data.frame(matrix(NA, nrow=0, ncol=2))
-    colnames(var_exp_df) <- c("cluster", "variance_explained")
+    colnames(var_exp_df) <- c("velocity_cluster", "variance_explained")
     for (vclust in vclust_names) {
         likelihoods <- fit_likelihoods %>% dplyr::select(vclust)
         likelihoods <- likelihoods %>% tidyr::drop_na() 
@@ -263,8 +263,13 @@ get_velocity_ligands <- function(obj,
         likelihood_df <- dplyr::full_join(likelihood_df, likelihoods, by="gene")
         
         var_exp_df <- rbind(var_exp_df, c(vclust, var_exp))
+        
+        if (any(vclust_df$ligand == "a")) {
+            browser()
+        }
     }
     
+    colnames(var_exp_df) <- c("velocity_cluster", "variance_explained")
     obj@misc$entrain$velocity_result <- list(vclust_ligand_importances = vclust_df, vclust_gene_likelihoods = likelihood_df, variance_explained = var_exp_df)
     return(obj)
 }

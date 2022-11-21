@@ -640,6 +640,7 @@ velocity_ligand_importance_heatmap <- function(obj,
 #' @param color_low Hex code of lower limit
 #' @param color_high Hex code of upper limit.
 #' @param colorscale Name of a color palette to be passed to the palette argument of scale_fill_distiller. Overrides color_low and color_high.
+#' @param rescale Boolean. If TRUE, rescales all likelihoods between 0 and 1.
 
 #' @return A gglot2 plot object.
 #' @export
@@ -648,7 +649,8 @@ plot_velocity_likelihoods_heatmap <- function(obj,
                                               n_top_genes = 5,
                                               color_low = "#f6ffff",
                                               color_high = "#01bfc4",
-                                              colorscale = "BuPu") {
+                                              colorscale = "BuPu",
+                                              rescale = TRUE) {
     
     res <- obj@misc$entrain$velocity_result
     lik <- res$vclust_gene_likelihoods
@@ -667,7 +669,6 @@ plot_velocity_likelihoods_heatmap <- function(obj,
         likelihood_genes <- append(likelihood_genes, top_genes)
     }
     
-    vcluster_likelihds[,-1] = scale(vcluster_likelihds[,-1], center=TRUE)
     selected_genes <- likelihood_genes %>% unlist() %>% unique()
     lik_heatmap <- vcluster_likelihds %>% dplyr::filter(., gene %in% selected_genes) %>% reshape2::melt(id.var="gene")
     min_val <- lik_heatmap$value[!is.na(lik_heatmap$value)] %>% min()
@@ -675,7 +676,10 @@ plot_velocity_likelihoods_heatmap <- function(obj,
     lik_heatmap$variable %>% unique() %>% sort()
     
     x_order <- vcluster_likelihds[,2:ncol(vcluster_likelihds)] %>% colnames %>% sort()
-    
+
+    if (rescale == TRUE) {
+        lik_heatmap <- lik_heatmap %>% dplyr::mutate(., value = scales::rescale(value, to=c(0,1)))
+    }
     
     plot <- ggplot(lik_heatmap) + 
         geom_tile(aes(x=factor(variable, levels=x_order), y=gene, fill=value)) +
@@ -768,7 +772,7 @@ plot_velocity_ligands <- function(adata,
                                    vector_type="stream", 
                                    velocity_cluster_key = "vcluster",
                                    velocity_clusters = NULL,
-                                   cell_palette="dimgrey",
+                                   cell_palette=NULL,
                                    size=100,
                                    velocity_cluster_palette = "gnuplot",
                                    label_fontsize = 15,
@@ -808,6 +812,47 @@ plot_velocity_ligands <- function(adata,
                           top_n_ligands = top_n_ligands,
                           figsize = figsize,
                           plot_output_path = plot_output_path)
+}
+
+
+#' @title Plot top ligands overlayed on a RNA velocity plot
+#' @description Visualizes the ligands most likely to be driving the observed RNA velocities.
+#' @param adata_clustered Path to a `.h5ad` `anndata` object. Must have had `entrain_cluster_velocities` run on it.
+#' @param plot_output_path Filename of plot to save.
+#' @param velocity_cluster_key Column name of `adata.obs` metadata denoting velocity clusters.
+#' @param vector_type Whether to plot a `scvelo.pl.velocity_embedding_stream()` plot or a `scvelo.pl.velocity_embedding_grid()` plot. Default `stream`
+
+#' @param ... `**kwargs` to be passed to `scvelo.pl.velocity_embedding_*`
+#' @return NULL. Saves a plot in working directory with name `plot_output_path`
+#' @export
+plot_velocity_clusters <- function(adata_clustered,
+                                   plot_output_path,
+                                   velocity_cluster_key,
+                                   vector_type = "stream",
+                                   ...
+) {
+    if (!requireNamespace("reticulate", quietly = TRUE)) {
+        stop(
+            paste0("Package \"reticulate\" and a python installation with scvelo must be installed to use Entrain-Velocity.\n",
+                   "You should run the following:\n",
+                   "1. `install.packages(\"reticulate\")`\n",
+                   "2. `reticulate::install_miniconda()`\n",
+                   "3. `reticulate::conda_create(\"r-entrain\")\n",
+                   "4. `reticulate::conda_install(\"r-entrain\", \"scanpy\", \"leidenalg\", \"python-igraph\", \"adjusttext\", channel=\"conda-forge\")`\n",
+                   "5. `reticulate::conda_install(\"r-entrain\", \"scvelo\", channel=\"bioconda\")`\n",
+                   "6. `reticulate::use_condaenv(\"r-entrain\")`",
+                   "to set up your reticulate and python environment properly.", sep=""),
+            call. = FALSE
+        )
+    }
+    reticulate::source_python(system.file("python/entrain_scvelo.py", package = "entrain"))
+    
+    plot_velocity_clusters_python(adata_clustered = adata_clustered,
+                           plot_file = plot_output_path,
+                           velocity_cluster_key = velocity_cluster_key,
+                           vector_type = vector_type,
+                           ...
+                           )
 }
 
 theme_minimal_big_font <- function() {

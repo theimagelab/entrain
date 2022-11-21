@@ -135,24 +135,18 @@ environment.</p>
 <p>As of Oct 2022, I found Monocle3 quite difficult to install on my
 2021 M1 MacBook because some of it’s dependencies did not have
 compatibility with Arm64 processors. To get around this, I created an
-x86_64 terminal shortcut that runs through Apple’s Rosetta platform.
-This emulates an x86_64 Intel processor. I also used <code>mamba</code>
-to keep the x86_64 packages separate from the Apple Silicon-compatible
-packages.</p>
-<p>The following assumes you have <code>conda</code> installed.</p>
-<ol style="list-style-type: decimal">
-<li>Go into Mac Applications folder and find <code>Terminal</code> or
-<code>iTerm</code>.</li>
-<li>Right click it and Duplicate it, calling it
-<code>iTerm x86_64</code>
-</li>
-<li>Right click <code>iTerm x86_64</code>, click <code>Get Info</code>,
-and tick the box saying “Open Using Rosetta”.</li>
-</ol>
-<p>Next, open <code>iTerm x86_64</code> and type <code>uname -m</code>.
-It should say <code>x86_64</code>. With that confirmed, type the
-following lines <strong>one at a time</strong> into your
-<code>x86_64</code> terminal:</p>
+x86_64 terminal shortcut that runs through Apple’s Rosetta platform,
+using <a href="https://taylorreiter.github.io/2022-04-05-Managing-multiple-architecture-specific-installations-of-conda-on-apple-M1/" class="external-link">this
+tutorial</a>. This emulates an x86_64 Intel processor and runs an
+<code>x86 version</code> of <code>conda</code> in that terminal only. I
+also used <code>mamba</code> to keep the x86_64 packages separate from
+the Apple Silicon-compatible packages.</p>
+<p>The following assumes you have an <code>x86_64</code> emulated
+terminal, and an <code>x86</code> version of conda. (I.e., you have
+completed the steps in <a href="https://taylorreiter.github.io/2022-04-05-Managing-multiple-architecture-specific-installations-of-conda-on-apple-M1/" class="external-link">this
+tutorial</a> )</p>
+<p>In your new <code>x86_64</code> terminal, type the following
+<strong>one line at a time</strong>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> create <span class="at">-n</span> x86_64</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate x86_64</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> env config vars set CONDA_SUBDIR=osx-64</span>
@@ -160,14 +154,18 @@ following lines <strong>one at a time</strong> into your
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> deactivate</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate x86_64</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install r-seurat r-monocle3 r-devtools r-biocmanager</span></code></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install r-seurat r-monocle3 r-devtools r-biocmanager <span class="co">#optionally, you could use mamba which should install everything in less than a minute.</span></span></code></pre></div>
 <p>Now open up R and check that it has run smoothly by opening R in your
 terminal typing the following:</p>
 <pre><code><span><span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">R.Version</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">system</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Rhome.html" class="external-link">R.home</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 <p>It should say <code>x86_64</code>, and R.home() points to an anaconda
-directory instead of your default system R.</p>
-<p>You may also need to install GenomeInfoDb</p>
+directory instead of your default system R. This means you’ve installed
+an <code>x86_64</code> version of <code>R</code> inside the
+<code>x86_64</code> terminal and it is localized to the conda
+environment.</p>
+<p>You may also need to install GenomeInfoDb, so type the following in
+R.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"GenomeInfoDbData"</span><span class="op">)</span></span></code></pre></div>
 </div>

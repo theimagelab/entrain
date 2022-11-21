@@ -289,7 +289,7 @@ def plot_velocity_ligands_python(adata,
                           arrow_size=1,
                           figsize=(16,9),
                           label_fontsize = 10,
-                          cell_palette="tab20",
+                          cell_palette=None,
                           signif_cluster_pct_cutoff = 0.01,
                           plot_output_path="entrain_plot.png",
                           plot_negative_VE = False,
@@ -353,7 +353,7 @@ def plot_velocity_ligands_python(adata,
         arrow_colors = velocity_cluster_palette
         if len(velocity_cluster_palette) != num_velo_clusters:
             raise ValueError("Number of arrow colors: " + str(arrow_colors) + " does not match the number of velocity clusters being plotted: " + str(velocity_clusters))
-        
+    
     adjust_for_stream = True if vector_type=="stream" else False
     for i,velocity_cluster in enumerate(velocity_clusters):
         cells = adata.obs.loc[adata.obs[velocity_cluster_key] == velocity_cluster].index
@@ -514,7 +514,7 @@ def get_velocity_cluster_label_positions(adata,
     
     return(label_df)
 
-def plot_velocity_clusters(adata_clustered, plot_file, velocity_cluster_key, vector_type="stream", **kwargs):
+def plot_velocity_clusters_python(adata_clustered, plot_file, velocity_cluster_key, vector_type="stream", palette = None, **kwargs):
 
     if type(adata_clustered) == str:
         adata_clustered = ad.read_h5ad(adata_clustered)
@@ -523,11 +523,15 @@ def plot_velocity_clusters(adata_clustered, plot_file, velocity_cluster_key, vec
                     
         plot = scv.pl.velocity_embedding_stream(adata_clustered, 
                                            color = velocity_cluster_key,
-                                           save = plot_file, **kwargs)
+                                           save = plot_file,
+                                           palette = palette,
+                                            **kwargs)
     elif vector_type == "grid":
         plot = scv.pl.velocity_embedding_grid(adata_clustered, 
                                            color = velocity_cluster_key,
-                                           save = plot_file, **kwargs)
+                                           save = plot_file,
+                                           palette = palette,
+                                            **kwargs)
     else:
         raise ValueError("vector_type needs to be one of \"stream\" or \"grid\". ")
 
