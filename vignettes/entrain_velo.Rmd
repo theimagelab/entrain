@@ -28,13 +28,16 @@ devtools::load_all()
 
 ### Conda setup.
 Because RNA velocity is natively done in python, this workflow involves calling python scripts from R to process the anndata object. The interfacing between python and R is handled by the package `reticulate`. We recommend using conda to setup a python environment that contains the required packages for velocity analysis.
-```{r Conda, results='hide'}
-# reticulate::conda_create("r-reticulate-sc")
-# reticulate::conda_install("r-reticulate-sc", packages = c("scanpy", "leidenalg", "python-igraph", "adjustText", "loompy"), channel="conda-forge")
-# reticulate::conda_install("r-reticulate-sc", packages = "scvelo", channel="bioconda") 
-reticulate::use_condaenv("r-reticulate-sc")  # points to a conda installation that contains scanpy, scvelo, and anndata.
+```{r Conda, eval=FALSE, results='hide', message=FALSE, warning=FALSE}
+reticulate::conda_create("r-reticulate-entrain")
+reticulate::conda_install("r-reticulate-entrain", packages = c("scanpy", "leidenalg", "python-igraph", "adjustText", "loompy"), channel="conda-forge")
+reticulate::conda_install("r-reticulate-entrain", packages = "scvelo", pip=TRUE)
+reticulate::use_condaenv("r-reticulate-entrain")
 ```
 
+```{r, echo=FALSE}
+reticulate::use_condaenv("r-reticulate-entrain")
+```
 ### Loading in required data
 
 We will download a developing mouse brain atlas dataset at gestation day 10/11. This dataset contains both RNA expression and RNA velocities needed for our analysis. The following code block downloads the .gz file, decompresses it, and converts it into a Seurat object for analysis.
@@ -42,10 +45,10 @@ We will download a developing mouse brain atlas dataset at gestation day 10/11. 
 library("SeuratDisk")
 options(timeout=3600)
 h5ad_path <- "Manno_E10_E11.h5ad"
-download.file("https://zenodo.org/record/7340143/files/Manno_E10_E11_velocities.h5ad.gz", "Manno_E10_E11_velocities.h5ad.gz")
-system("gunzip Manno_E10_E11_velocities.h5ad.gz")
-Convert("Manno_E10_E11_velocities.h5ad", dest = "h5seurat", overwrite = FALSE, verbose = TRUE)
-obj <- LoadH5Seurat("Manno_E10_E11_velocities.h5seurat", assays="RNA")
+download.file("https://zenodo.org/record/7340143/files/Manno_E10_E11.h5ad.gz", "Manno_E10_E11.h5ad.gz")
+system("gunzip Manno_E10_E11.h5ad.gz")
+Convert("Manno_E10_E11.h5ad", dest = "h5seurat", overwrite = FALSE, verbose = TRUE)
+obj <- LoadH5Seurat("Manno_E10_E11.h5seurat", assays="RNA")
 ```
 ```{r, echo=FALSE}
 obj_v <- readRDS("../../entrain_vignette_data/manno_entrain.rds")
@@ -143,7 +146,7 @@ knitr::include_graphics("figures/entrain_velocity_influence.png")
 Visualization of ligands and their relative importances, or contribution, towards each `vcluster`.
 ```{r Importances heatmap, message=FALSE, fig.width=10, fig.height=12}
 g<-velocity_ligand_importance_heatmap(obj_v,
-                                     n_top_ligands=5)
+                                     n_top_ligands=5) + ggplot2::scale_fill_viridis_c(option="inferno")
 g
 ```
 
@@ -155,7 +158,7 @@ g<-plot_velocity_likelihoods_heatmap(obj_v,
 g
 ```
 
-A good sanity check is to confirm that the top genes are what we would expect from the biological system. In this case,  FEDSFSDFSD
+A good sanity check is to confirm that the top genes are what we would expect from the biological system. In this case,  genes like `Ccnd2`, `Cdk1`, `Cald1`, `Smc4`, `Top2a`, and `Tpm1` are exhibited as top velocity genes across most velocity clusters. 
 
 #### Visualizing intracellular regulation downstream of the ligand-receptor pair.
 The function `plot_velocity_ligand_targets` extracts regulatory information from `NicheNetR` to visualize the predicted regulatory linkages between the `n_top_ligands` and the `n_top_targets` high velocity likelihood genes. 

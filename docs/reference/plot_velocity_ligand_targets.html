@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -52,7 +53,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_velocity_ligand_targets</span><span class="op">(</span></span>
 <span>  <span class="va">obj</span>,</span>
 <span>  n_top_targets <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  vcluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  velocity_cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_top_ligands <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  <span class="va">ligand_target_matrix</span>,</span>
 <span>  color_low <span class="op">=</span> <span class="st">"#f6ffff"</span>,</span>
@@ -71,6 +72,10 @@
 <dd><p>Number of top likelihood target genes to visualize. Default 10.</p></dd>
 
 
+<dt>velocity_cluster</dt>
+<dd><p>Name of the velocity cluster whose regulatory relationships you wish to plot.</p></dd>
+
+
 <dt>n_top_ligands</dt>
 <dd><p>Number of top ligands to visualize. Default 10.</p></dd>
 
@@ -85,6 +90,10 @@
 
 <dt>color_high</dt>
 <dd><p>Hex code of upper limit.</p></dd>
+
+
+<dt>colorscale</dt>
+<dd><p>Name of an RColorBrewer palette. Default <code>Greens</code></p></dd>
 
 </dl></div>
     <div class="section level2">

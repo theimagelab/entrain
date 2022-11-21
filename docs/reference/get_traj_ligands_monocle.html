@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -52,6 +53,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_traj_ligands_monocle</span><span class="op">(</span></span>
 <span>  <span class="va">obj</span>,</span>
 <span>  sender_obj <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cds <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sender_cluster_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sender_cluster_names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  num_dim <span class="op">=</span> <span class="fl">10</span>,</span>
@@ -67,7 +69,6 @@
 <span>  prune_graph <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  close_loop <span class="op">=</span> <span class="cn">F</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  cds <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reduction_key <span class="op">=</span> <span class="st">"MonocleUMAP_"</span>,</span>
 <span>  sender_reduction_key <span class="op">=</span> <span class="st">"umap"</span>,</span>
 <span>  expression_proportion_cutoff <span class="op">=</span> <span class="fl">0.01</span>,</span>
@@ -88,6 +89,10 @@
 <dd><p>A seurat obj containing sender cells expressing ligands. Set to NULL if your sender cells are contained in 'obj'.</p></dd>
 
 
+<dt>cds</dt>
+<dd><p>Optional. You can supply a <code>monocle3</code> <code>cds</code> object here if you have run <code><a href="https://rdrr.io/pkg/monocle3/man/order_cells.html" class="external-link">monocle3::order_cells()</a></code> on it already.</p></dd>
+
+
 <dt>sender_cluster_key</dt>
 <dd><p>Column name in metadata that denotes where sender cells are specified. If NULL, this defaults to the default Seurat Idents given by <code>levels(obj)</code></p></dd>
 
@@ -104,12 +109,24 @@
 <dd><p>Optional. Character vector of root cell names that comprise the beginning of the trajectory (must be in colnames(obj)). If not given or NULL, will open a window to interactively select a root cell (Monocle's default behaviour).</p></dd>
 
 
+<dt>root_pr_nodes</dt>
+<dd><p>Argument for <code><a href="https://rdrr.io/pkg/monocle3/man/order_cells.html" class="external-link">monocle3::order_cells()</a></code>. Use if you want to specify root nodes programmatically.</p></dd>
+
+
 <dt>expressed_ligands</dt>
 <dd><p>Character vector of active ligands in dataset (must be in rownames(obj))</p></dd>
 
 
 <dt>path_cell_names</dt>
 <dd><p>Optional. Character vector of cell names that comprise the differentiation trajectory to be analyzed by Entrain (must be in colnames(obj)). If not given or NULL, will open a window to interactively select the trajectory path to analyze (Monocle's default behaviour).</p></dd>
+
+
+<dt>path_nodes</dt>
+<dd><p>Use if you want to specify the path without user interaction. e.g. <code>path_nodes = c("Y_2", "Y_50")</code> tells Entrain to analyze cells between the nodes <code>Y_2</code> and <code>Y_50</code></p></dd>
+
+
+<dt>minimal_branch_len</dt>
+<dd><p>Parameter for Monocle graph learning.</p></dd>
 
 
 <dt>ncenter</dt>
@@ -136,8 +153,20 @@
 <dd><p>If there is an existing Monocle trajectory in the obj (e.g. if you have run this function before), overwrite = TRUE will delete the old trajectory. Otherwise, the old trajectory will be used for Entrain.</p></dd>
 
 
+<dt>reduction_key</dt>
+<dd><p>Seurat reduction key for dimension reduction visualization.</p></dd>
+
+
 <dt>sender_reduction_key</dt>
 <dd><p>Only applicable if sender_obj is not NULL: The dimension reduction key of sender_obj that you wish to use,</p></dd>
+
+
+<dt>expression_proportion_cutoff</dt>
+<dd><p>Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than <code>expression_proportion_cutoff</code> fraction of cells in the sender cluster.</p></dd>
+
+
+<dt>covariance_cutoff</dt>
+<dd><p>Remove the bottom <code>covariance_cutoff</code> fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).</p></dd>
 
 
 <dt>lr_network</dt>

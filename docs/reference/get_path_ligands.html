@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -91,6 +92,14 @@
 
 <dt>cluster_key</dt>
 <dd><p>Column name in colnames(obj@meta.data) corresponding to</p></dd>
+
+
+<dt>reduction_name</dt>
+<dd><p>Seurat reduction key for dimension reduction visualization.</p></dd>
+
+
+<dt>covariance_cutoff</dt>
+<dd><p>Remove the bottom <code>covariance_cutoff</code> fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).</p></dd>
 
 
 <dt>return_model</dt>

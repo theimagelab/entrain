@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -50,7 +51,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">draw_entrain_circos</span><span class="op">(</span></span>
-<span>  <span class="va">obj_entr</span>,</span>
+<span>  <span class="va">obj</span>,</span>
 <span>  path_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vcluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_top_ligands <span class="op">=</span> <span class="fl">10</span>,</span>
@@ -62,7 +63,11 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>path_name</dt>
+    <dl><dt>obj</dt>
+<dd><p>A seurat object containing the Entrain result from entrain_velocity or get_traj_ligands()</p></dd>
+
+
+<dt>path_name</dt>
 <dd><p>Optional. String indicating the name of the trajectory path. Use this if you want to plot ligands associated with pseudotime branches.</p></dd>
 
 
@@ -82,8 +87,8 @@
 <dd><p>NicheNet weighted networks.</p></dd>
 
 
-<dt>obj</dt>
-<dd><p>A seurat object containing the Entrain result from entrain_velocity or get_traj_ligands()</p></dd>
+<dt>palette</dt>
+<dd><p>RColorBrewer color palette for plotting sender cell clors.</p></dd>
 
 </dl></div>
     <div class="section level2">

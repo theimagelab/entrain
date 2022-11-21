@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -53,10 +54,10 @@
 <span>  <span class="va">adata</span>,</span>
 <span>  velocity_cluster_key <span class="op">=</span> <span class="st">"vcluster"</span>,</span>
 <span>  resolution <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  reduction_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_adata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot_file <span class="op">=</span> <span class="st">"velocity_clusters.png"</span>,</span>
 <span>  vector_type <span class="op">=</span> <span class="st">"stream"</span>,</span>
+<span>  reduction_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -83,8 +84,16 @@
 <dd><p>Plot file name. Default is "velocity_clusters.png".</p></dd>
 
 
-<dt>obj</dt>
-<dd><p>A seurat object</p></dd>
+<dt>vector_type</dt>
+<dd><p>Vector types to plot. Only used with plot_file is not NULL. Either "grid" or "stream". Default "stream".</p></dd>
+
+
+<dt>reduction_key</dt>
+<dd><p>Dimension reduction to plot. Only use when plot_file is not NULL.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Arguments to pass to <code>scvelo.pl.velocity_embedding_stream()</code> or <code>scvelo.pl.velocity_embedding_grid()</code>, depending on <code>vector_type</code></p></dd>
 
 </dl></div>
     <div class="section level2">

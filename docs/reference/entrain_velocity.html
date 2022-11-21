@@ -34,8 +34,9 @@ this will input a noisy dataset to Entrain's randomForest, and any ligands that 
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -68,15 +69,16 @@ this will input a noisy dataset to Entrain's randomForest, and any ligands that 
 <span>  <span class="va">receiver_obj</span>,</span>
 <span>  sender_obj <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">adata</span>,</span>
+<span>  <span class="va">sender_cluster_key</span>,</span>
 <span>  expressed_ligands <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sender_cluster_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sender_clusters <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  reduction_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  save_adata <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  velocity_cluster_key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  num_jobs <span class="op">=</span> <span class="fl">10L</span>,</span>
-<span>  num_top_genes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  num_top_genes <span class="op">=</span> <span class="fl">500L</span>,</span>
 <span>  expression_proportion_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  resolution <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  lr_network <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ligand_target_matrix <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -85,12 +87,56 @@ this will input a noisy dataset to Entrain's randomForest, and any ligands that 
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>save_adata</dt>
+    <dl><dt>receiver_obj</dt>
+<dd><p>A seurat object.</p></dd>
+
+
+<dt>sender_obj</dt>
+<dd><p>Optional. A seurat object. Use this if your sender cells are in a different dataset than your receiver cells. E.g. if the microenvironment data is in a different file than the differentiating cells.</p></dd>
+
+
+<dt>adata</dt>
+<dd><p>An anndata file containing velocities, preclustered with cluster_velocities().</p></dd>
+
+
+<dt>sender_cluster_key</dt>
+<dd><p>Column name in <code>adata.obs</code> that denotes the sender cluster annotation column.</p></dd>
+
+
+<dt>expressed_ligands</dt>
+<dd><p>Optional. A list of ligands expressed by the sender cells. This is calculated by default but you can specify if you have specific ligands of interest.</p></dd>
+
+
+<dt>sender_clusters</dt>
+<dd><p>Optional. Character vector denoting sender cluster cell types. If not supplied, will launch an interactive workflow selecting them manually.</p></dd>
+
+
+<dt>reduction_key</dt>
+<dd><p>Seurat reduction key for dimension reduction visualization.</p></dd>
+
+
+<dt>save_adata</dt>
 <dd><p>Optional. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo.</p></dd>
 
 
 <dt>velocity_cluster_key</dt>
 <dd><p>Column name of the cluster labels in the metadata of adata_clustered. Can be calculated manually in scvelo with scvelo.tl.velocity_clusters().</p></dd>
+
+
+<dt>num_jobs</dt>
+<dd><p>Long integer. Number of parallel jobs to run for scvelo recover dynamics function.</p></dd>
+
+
+<dt>num_top_genes</dt>
+<dd><p>Long integer. Number of top velocity genes to calculate likelihoods for. Default 500L.</p></dd>
+
+
+<dt>expression_proportion_cutoff</dt>
+<dd><p>Pct cutoff to threshold a ligand as active. A ligand is 'active' if it is expressed in more than <code>expression_proportion_cutoff</code> fraction of cells in the sender cluster.</p></dd>
+
+
+<dt>resolution</dt>
+<dd><p>Optional argument defining resolution of velocity clustering. Default 0.05.</p></dd>
 
 
 <dt>lr_network</dt>
@@ -101,31 +147,15 @@ this will input a noisy dataset to Entrain's randomForest, and any ligands that 
 <dd><p>NicheNet ligand-target data file.</p></dd>
 
 
-<dt>obj</dt>
-<dd><p>A seurat object</p></dd>
-
-
-<dt>adata_clustered</dt>
-<dd><p>An anndata file containing velocities, preclustered with cluster_velocities().</p></dd>
-
-
-<dt>n_jobs</dt>
-<dd><p>Long integer. Number of parallel jobs to run for scvelo recover dynamics function.</p></dd>
-
-
-<dt>n_top_genes</dt>
-<dd><p>Long integer. Number of top velocity genes to calculate likelihoods for. Default 500L.</p></dd>
-
-
-<dt>resolution</dt>
-<dd><p>Optional argument defining resolution of velocity clustering. Default 0.05.</p></dd>
+<dt>...</dt>
+<dd><p>Arguments to pass to <code><a href="entrain_cluster_velocities.html">entrain_cluster_velocities()</a></code> and <code>scvelo.pl.velocity_embedding_stream()</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>'a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.</p>
+<p>a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

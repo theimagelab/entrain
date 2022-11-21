@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -51,13 +52,13 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cellwise_influences</span><span class="op">(</span></span>
 <span>  <span class="va">obj</span>,</span>
-<span>  ligands_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">ligand_target_matrix</span>,</span>
-<span>  slot <span class="op">=</span> <span class="st">"data"</span>,</span>
-<span>  window_pct <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  step_size <span class="op">=</span> <span class="fl">0.02</span>,</span>
-<span>  n_top_genes <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  n_top_ligands <span class="op">=</span> <span class="fl">5</span></span>
+<span>  ligands_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  step_size <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>  window_pct <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  n_top_ligands <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  n_top_genes <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  slot <span class="op">=</span> <span class="st">"data"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -67,31 +68,41 @@
 <dd><p>A seurat object that has been analyzed with get_path_ligands or get_traj_ligands_monocle.</p></dd>
 
 
-<dt>slot</dt>
-<dd><p>Slot of Seurat object from which to retrieve expression data.</p></dd>
+<dt>ligand_target_matrix</dt>
+<dd><p>NicheNet ligand-target data file.</p></dd>
 
 
-<dt>window_pct</dt>
-<dd><p>Size of the window, as a percentage of the number of cells in a path.</p></dd>
+<dt>ligands_list</dt>
+<dd><p>Optional, a character vector denoting ligands. If supplied, <code>cellwise_influences</code> will calculate influences for the ligands in <code>ligands_list</code> instead of the top ranked ligands.</p></dd>
 
 
 <dt>step_size</dt>
 <dd><p>Size of the step, or interval, as a percentage of the number of cells in a path.</p></dd>
 
 
-<dt>n_top_genes</dt>
-<dd><p>Number of top importance genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.</p></dd>
+<dt>window_pct</dt>
+<dd><p>Size of the window, as a percentage of the number of cells in a path.</p></dd>
 
 
 <dt>n_top_ligands</dt>
 <dd><p>Number of top ligands to consider in the cellwise analysis.</p></dd>
+
+
+<dt>n_top_genes</dt>
+<dd><p>Number of top dynamical genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.</p></dd>
+
+
+<dt>slot</dt>
+<dd><p>Slot of Seurat object from which to retrieve expression data.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>'a Seurat object updated with per-cell ligand influence score in obj@misc$entrain$path$path_name$cellwise_influences.</p>
+<p>a Seurat object updated with per-cell ligand influence score in <code>obj@misc$entrain$path$path_name$cellwise_influences</code>, as well as a column in <code>obj@meta.data</code></p>
+
+
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

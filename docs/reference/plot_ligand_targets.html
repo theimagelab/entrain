@@ -24,8 +24,9 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis from an scvelo anndata object.</a>
-    <a class="dropdown-item" href="../articles/faqs.html">Frequently Asked Questions</a>
+    <a class="dropdown-item" href="../articles/entrain_traj_manno.html">Entrain ligand-trajectory analysis</a>
+    <a class="dropdown-item" href="../articles/entrain_velo.html">Entrain ligand-velocity analysis</a>
+    <a class="dropdown-item" href="../articles/faqs.html">FAQ</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -64,6 +65,10 @@
 <dd><p>A seurat object that has been analyzed with get_path_ligands or get_traj_ligands_monocle.</p></dd>
 
 
+<dt>path</dt>
+<dd><p>A path name. Must be from in <code>names(obj@misc$entrain$paths)</code></p></dd>
+
+
 <dt>n_top_targets</dt>
 <dd><p>Number of top importance target genes to visualize. Default 10.</p></dd>
 
@@ -74,10 +79,6 @@
 
 <dt>ligand_target_matrix</dt>
 <dd><p>NicheNet ligand-target data file.</p></dd>
-
-
-<dt>colorscale</dt>
-<dd><p>Plotly list colorscale object.</p></dd>
 
 </dl></div>
     <div class="section level2">
