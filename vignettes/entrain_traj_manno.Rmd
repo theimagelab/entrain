@@ -13,12 +13,34 @@ Entrain-Trajectory Analysis requires the following:
 
 # Pre-processing and loading required data.
 
-## Loading in libraries
+## Libraries specific to this vignette
 If you haven't installed `Entrain` yet, see the home page.
+After installing `Entrain`, some further dependencies are required specific to the analysis contained in this vignette.
+```{r Dependencies, eval=FALSE}
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+devtools::install_github('satijalab/seurat-wrappers')
+devtools::install_github('cole-trapnell-lab/monocle3')
+devtools::install_github("mojaveazure/seurat-disk")
+```
+
+Then, we can load in required dependencies:
 ```{r Libraries,message=FALSE, results='hide', class.source = 'fold-show', eval=FALSE}
-library("SeuratDisk"); library("Seurat"); library("SeuratWrappers"); library("dplyr");
+library("SeuratDisk"); library("Seurat"); library("SeuratWrappers");
 library("entrain")
 ```
+
+<details>
+<summary>**Managing dependencies with conda**</summary>
+If you are on Linux, Mac or Windows Subsystem for Linux, we recommend using `conda` (or it's faster alternative, `mamba`) to install these dependencies. In particular, `monocle3` installation can be error-prone, a problem that is [exacerbated on Apple Silicon Macs.](./faqs.html). To do this, you can execute the following in your command line. Windows users may need to stick to RStudio and the [monocle3 documentation.](https://cole-trapnell-lab.github.io/monocle3/docs/installation/)
+```{bash Dependencies conda, eval=FALSE}
+conda create -n r-entrain
+conda activate r-entrain
+conda install r-base r-seurat r-monocle3 r-devtools r-biocmanager
+```
+</details>
+
 ```{r Libraries show, echo=FALSE, message=FALSE, results='hide', class.source = 'fold-show'}
 library("SeuratDisk"); library("Seurat"); library("SeuratWrappers"); library("dplyr");
 devtools::load_all()

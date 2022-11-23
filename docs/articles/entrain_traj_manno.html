@@ -98,13 +98,35 @@ step.</li>
 <h2 id="pre-processing-and-loading-required-data-">Pre-processing and loading required data.<a class="anchor" aria-label="anchor" href="#pre-processing-and-loading-required-data-"></a>
 </h2>
 <div class="section level3">
-<h3 id="loading-in-libraries">Loading in libraries<a class="anchor" aria-label="anchor" href="#loading-in-libraries"></a>
+<h3 id="libraries-specific-to-this-vignette">Libraries specific to this vignette<a class="anchor" aria-label="anchor" href="#libraries-specific-to-this-vignette"></a>
 </h3>
-<p>If you haven’t installed <code>Entrain</code> yet, see the home
-page.</p>
+<p>If you haven’t installed <code>Entrain</code> yet, see the home page.
+After installing <code>Entrain</code>, some further dependencies are
+required specific to the analysis contained in this vignette.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://mojaveazure.github.io/seurat-disk/" class="external-link">"SeuratDisk"</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://satijalab.org/seurat" class="external-link">"Seurat"</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"SeuratWrappers"</span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span><span class="op">)</span>;</span>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'satijalab/seurat-wrappers'</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'cole-trapnell-lab/monocle3'</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mojaveazure/seurat-disk"</span><span class="op">)</span></span></code></pre></div>
+<p>Then, we can load in required dependencies:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://mojaveazure.github.io/seurat-disk/" class="external-link">"SeuratDisk"</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://satijalab.org/seurat" class="external-link">"Seurat"</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"SeuratWrappers"</span><span class="op">)</span>;</span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"entrain"</span><span class="op">)</span></span></code></pre></div>
+<details><summary><strong>Managing dependencies with conda</strong>
+</summary><p>If you are on Linux, Mac or Windows Subsystem for Linux, we recommend
+using <code>conda</code> (or it’s faster alternative,
+<code>mamba</code>) to install these dependencies. In particular,
+<code>monocle3</code> installation can be error-prone, a problem that is
+<a href="./faqs.html">exacerbated on Apple Silicon Macs.</a>. To do
+this, you can execute the following in your command line. Windows users
+may need to stick to RStudio and the <a href="https://cole-trapnell-lab.github.io/monocle3/docs/installation/" class="external-link">monocle3
+documentation.</a></p>
+<pre class="dependencies"><code>conda create -n r-entrain
+conda activate r-entrain
+conda install r-base r-seurat r-monocle3 r-devtools r-biocmanager</code></pre>
+</details>
 </div>
 <div class="section level3">
 <h3 id="loading-in-required-data">Loading in required data<a class="anchor" aria-label="anchor" href="#loading-in-required-data"></a>
@@ -113,7 +135,7 @@ page.</p>
 day 10/11. The following code block downloads the .gz file to the
 working directory, decompresses it, and converts it into a Seurat object
 for analysis.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>timeout<span class="op">=</span><span class="fl">3600</span><span class="op">)</span></span>
 <span><span class="co">#download.file("https://zenodo.org/record/7340143/files/Manno_E10_E11.rds", "Manno_E10_E11.rds")</span></span>
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"Manno_E10_E11.rds"</span><span class="op">)</span></span></code></pre></div>
@@ -121,7 +143,7 @@ for analysis.</p>
 networks for the prior knowledge needed to make conclusions about
 environmentally-influenced trajectories. The genes here have been
 pre-converted from the original human genes to mouse orthologs.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lr_network_mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/7340143/files/lr_network_mm.rds"</span><span class="op">)</span><span class="op">)</span> <span class="co">#</span></span>
 <span><span class="va">ligand_target_matrix_mm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/connections.html" class="external-link">url</a></span><span class="op">(</span><span class="st">"https://zenodo.org/record/7340143/files/ligand_target_matrix_mm.rds"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -133,8 +155,8 @@ after gestation. This comprises a population of neuroblasts rapidly
 differentiating to neurons (our cells we are going to analyse), as well
 as their complex microenvironment made up of cells from the endoderm,
 mesoderm, fibroblastic, blood, and immune compartments.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">n_clusters</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">Class</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">n_clusters</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">@</span><span class="va">meta.data</span><span class="op">$</span><span class="va">Class</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">cols</span> <span class="op">=</span> <span class="fu">Seurat</span><span class="fu">::</span><span class="fu"><a href="https://satijalab.org/seurat/reference/DiscretePalette.html" class="external-link">DiscretePalette</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n_clusters</span>, palette <span class="op">=</span> <span class="st">"alphabet2"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://satijalab.org/seurat/reference/DimPlot.html" class="external-link">DimPlot</a></span><span class="op">(</span><span class="va">obj</span>, group.by <span class="op">=</span> <span class="st">"Class"</span>, cols<span class="op">=</span><span class="va">cols</span><span class="op">)</span></span></code></pre></div>
 <p><img src="entrain_traj_manno_files/figure-html/Dataset%20at%20a%20glance-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -150,7 +172,7 @@ mesoderm, fibroblastic, blood, and immune compartments.</p>
 All steps of Monocle, as well as Entrain analysis, are encapsulated in
 an interactive workflow with the function
 <code><a href="../reference/get_traj_ligands_monocle.html">get_traj_ligands_monocle()</a></code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj_entr</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/get_traj_ligands_monocle.html">get_traj_ligands_monocle</a></span><span class="op">(</span><span class="va">obj</span>,</span>
 <span>                                   sender_cluster_key <span class="op">=</span> <span class="st">"Class"</span>,</span>
 <span>                                   lr_network <span class="op">=</span> <span class="va">lr_network_mm</span>, ligand_target_matrix<span class="op">=</span><span class="va">ligand_target_matrix_mm</span><span class="op">)</span></span></code></pre></div>
@@ -212,7 +234,7 @@ should have <code><a href="https://rdrr.io/pkg/monocle3/man/learn_graph.html" cl
 <code><a href="https://rdrr.io/pkg/monocle3/man/order_cells.html" class="external-link">monocle3::order_cells()</a></code> called on it already, and should be
 passed into the argument
 <code>get_traj_ligands_monocle(..., cds = monocle_cds)</code></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj_entr</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/get_traj_ligands_monocle.html">get_traj_ligands_monocle</a></span><span class="op">(</span><span class="va">obj</span>, cds <span class="op">=</span> <span class="va">monocle_cds</span>,</span>
 <span>                                   sender_cluster_key <span class="op">=</span> <span class="st">"Class"</span>,</span>
 <span>                                   lr_network <span class="op">=</span> <span class="va">lr_network_mm</span>, ligand_target_matrix<span class="op">=</span><span class="va">ligand_target_matrix_mm</span><span class="op">)</span></span></code></pre></div>
@@ -226,7 +248,7 @@ GUI to interact with.
 <details><summary><strong>Click to show</strong>
 </summary><p>First, we will run a standard monocle workflow to learn the
 trajectory.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">monocle_cds</span> <span class="op">&lt;-</span> <span class="fu">SeuratWrappers</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SeuratWrappers/man/as.cell_data_set.html" class="external-link">as.cell_data_set</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
 <span><span class="va">monocle_cds</span> <span class="op">&lt;-</span> <span class="fu">monocle3</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/monocle3/man/preprocess_cds.html" class="external-link">preprocess_cds</a></span><span class="op">(</span>cds <span class="op">=</span> <span class="va">monocle_cds</span>, num_dim <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">monocle_cds</span> <span class="op">&lt;-</span> <span class="fu">monocle3</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/monocle3/man/reduce_dimension.html" class="external-link">reduce_dimension</a></span><span class="op">(</span>cds <span class="op">=</span> <span class="va">monocle_cds</span><span class="op">)</span></span>
@@ -244,10 +266,10 @@ from the cluster and open it on your local machine. This allows you to
 validate that the trajectory makes biological sense before running
 Entrain analysis, and if so, shows you the node labels that you will
 need to run Entrain without a GUI.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span></span>
-<span><span class="va">node_coords</span> <span class="op">&lt;-</span> <span class="va">monocle_cds</span><span class="op">@</span><span class="va">principal_graph_aux</span><span class="op">$</span><span class="va">UMAP</span><span class="op">$</span><span class="va">dp_mst</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>node <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"node"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">node_coords</span> <span class="op">&lt;-</span> <span class="va">monocle_cds</span><span class="op">@</span><span class="va">principal_graph_aux</span><span class="op">$</span><span class="va">UMAP</span><span class="op">$</span><span class="va">dp_mst</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>    <span class="fu">mutate</span><span class="op">(</span>node <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"node"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fig</span><span class="op">&lt;-</span><span class="fu">monocle3</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/monocle3/man/plot_cells.html" class="external-link">plot_cells</a></span><span class="op">(</span><span class="va">monocle_cds</span>, color_cells_by<span class="op">=</span><span class="st">"Class"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">node_coords</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggrepel/man/geom_text_repel.html" class="external-link">geom_text_repel</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">node_coords</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">y</span>, label<span class="op">=</span><span class="va">node</span><span class="op">)</span>,</span>
@@ -268,7 +290,7 @@ your trajectory of interest.</p>
 as the root cells, denoting the progenitor cell types. We can then run
 Entrain programmatically by setting <code>root_pr_nodes = "Y_7"</code>
 and <code>path_nodes = c("Y_5", "Y_27")</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj_entr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_traj_ligands_monocle.html">get_traj_ligands_monocle</a></span><span class="op">(</span><span class="va">obj</span>, cds <span class="op">=</span> <span class="va">monocle_cds</span>,</span>
 <span>                                   sender_cluster_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Blood"</span>, <span class="st">"Endoderm"</span>, <span class="st">"Fibroblast"</span>,</span>
 <span>                                                              <span class="st">"Immune"</span>, <span class="st">"Mesoderm"</span><span class="op">)</span>,</span>
@@ -288,7 +310,7 @@ and <code>path_nodes = c("Y_5", "Y_27")</code>.</p>
 <p>We can visualize the top ranked ligands at a glance with the
 following function, replacing “celltype” with the relevant column name
 in <code>obj@meta.data</code></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_ligand_trajectories.html">plot_ligand_trajectories</a></span><span class="op">(</span><span class="va">obj_entr</span>, color_cells_by <span class="op">=</span> <span class="st">"pseudotime"</span>, group_label_size<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Cells aren't colored in a way that allows them to be grouped.</span></span></code></pre>
 <p><img src="entrain_traj_manno_files/figure-html/unnamed-chunk-7-1.png" width="700" style="display: block; margin: auto;"></p>
@@ -308,12 +330,12 @@ microenvironmental signals supported in neurobiology literature.</p>
 <p>We can visualize the invididual ligand-gene relationships that
 contributing most to the trajectory dynamics. This data is extracted
 from the underlying NicheNet database that Entrain uses for fitting.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="va">obj_entr</span><span class="op">@</span><span class="va">misc</span><span class="op">$</span><span class="va">entrain</span><span class="op">$</span><span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="va">obj_entr</span><span class="op">@</span><span class="va">misc</span><span class="op">$</span><span class="va">entrain</span><span class="op">$</span><span class="va">paths</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">plot_lig</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/plot_ligand_targets.html">plot_ligand_targets</a></span><span class="op">(</span><span class="va">obj_entr</span>, path<span class="op">=</span><span class="va">paths</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, ligand_target_matrix <span class="op">=</span> <span class="va">ligand_target_matrix_mm</span><span class="op">)</span></span></code></pre></div>
 <p>We can visualize the top covarying genes of a trajectory, including
 genes that are not influenced by extracellular signaling.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_genes</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/plot_covarying_genes_scatter.html">plot_covarying_genes_scatter</a></span><span class="op">(</span><span class="va">obj_entr</span>, path<span class="op">=</span><span class="va">paths</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, color_key<span class="op">=</span><span class="st">"Class"</span>, n_top_genes <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">plot_genes</span></span></code></pre></div>
 <p><img src="entrain_traj_manno_files/figure-html/unnamed-chunk-9-1.png" width="480" style="display: block; margin: auto;"></p>
@@ -326,7 +348,7 @@ comprise varying degrees of environmental dependence along the
 continuum. We can visualize where the environmental influence is
 occurring in this continuum to generate hypotheses about cell states
 which more or less prone to environmental influence.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj_entr</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/cellwise_influences.html">cellwise_influences</a></span><span class="op">(</span><span class="va">obj_entr</span>,</span>
 <span>                              ligand_target_matrix<span class="op">=</span><span class="va">ligand_target_matrix_mm</span>,</span>
 <span>                              step_size<span class="op">=</span><span class="fl">0.10</span>,</span>
