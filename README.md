@@ -7,10 +7,5 @@ While existing ligand-receptor tools exist, these tools (e.g., TraSig, CellChat)
 
 Entrain is based on, and can be considered a unification, of existing tools: Monocle3, NicheNet and RNA Velocity. Furthermore, Entrain works directly with the native single-cell data types, namely SeuratObject and anndata.
 
-## Installation
-```{r}
-devtools::install_github("theimagelab/entrain")
-```
-
 ## Documentation
 Full documentation, including example analysis, can be found at https://theimagelab.github.io/entrain/
