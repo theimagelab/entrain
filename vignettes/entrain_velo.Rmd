@@ -167,7 +167,7 @@ g<-plot_velocity_ligand_targets(obj_v, vcluster="vcluster1", n_top_ligands=10L, 
 g
 ```
 ```{r Ligand Targets show, echo=FALSE}
-knitr::include_graphics("/articles/figures/velocity_targets.png", error = FALSE)
+knitr::include_graphics("figures/velocity_targets.png", error = FALSE)
 ```
 
 #### Circos plot
