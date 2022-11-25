@@ -9,7 +9,7 @@ entrain_cluster_velocities(
   velocity_cluster_key = "vcluster",
   resolution = 0.05,
   save_adata = NULL,
-  plot_file = "velocity_clusters.png",
+  plot_output_path = "velocity_clusters.png",
   vector_type = "stream",
   reduction_key = NULL,
   ...
@@ -24,11 +24,11 @@ entrain_cluster_velocities(
 
 \item{save_adata}{Optional. Filename of anndata object to write results to. If not given or NULL, anndata will not be saved. Recommended if you want to re-run or continue analysis in scanpy/scvelo.}
 
-\item{plot_file}{Plot file name. Default is "velocity_clusters.png".}
+\item{plot_output_path}{Plot file name. Default is "velocity_clusters.png".}
 
-\item{vector_type}{Vector types to plot. Only used with plot_file is not NULL. Either "grid" or "stream". Default "stream".}
+\item{vector_type}{Vector types to plot. Only used with plot_output_path is not NULL. Either "grid" or "stream". Default "stream".}
 
-\item{reduction_key}{Dimension reduction to plot. Only use when plot_file is not NULL.}
+\item{reduction_key}{Dimension reduction to plot. Only use when plot_output_path is not NULL.}
 
 \item{...}{Arguments to pass to \code{scvelo.pl.velocity_embedding_stream()} or \code{scvelo.pl.velocity_embedding_grid()}, depending on \code{vector_type}}
 }

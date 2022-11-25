@@ -14,7 +14,7 @@ plot_velocity_ligands(
   vector_type = "stream",
   velocity_cluster_key = "vcluster",
   velocity_clusters = NULL,
-  cell_palette = "dimgrey",
+  cell_palette = NULL,
   size = 100,
   velocity_cluster_palette = "gnuplot",
   label_fontsize = 15,
@@ -26,7 +26,7 @@ plot_velocity_ligands(
 \arguments{
 \item{adata}{Path to a \code{.h5ad} \code{anndata} object. Must have had entrain_velocity run on it.}
 
-\item{color}{scvelo.pl argument: Key for annotations of observations/cells or variables/genes. Use if you want dot color to denote a cell type or other annotation. Default is \code{dimgrey}, no annotation colors.}
+\item{color}{scvelo.pl argument: Key for annotations of observations/cells or variables/genes. Use if you want dot color to denote a cell type or other annotation. Default is \code{NULL} - all cells are colored a single color denoted by argument \code{cell_palette}}
 
 \item{alpha}{Opacity of points.}
 
@@ -46,7 +46,7 @@ plot_velocity_ligands(
 
 \item{size}{scvelo.pl.velocity_embedding argument: Size of points.}
 
-\item{velocity_cluster_palette}{A matplotlib color palette denoting colorscale of velocity clusters.}
+\item{velocity_cluster_palette}{A matplotlib color palette denoting colorscale of velocity clusters e.g., \code{"Spectral"}. OR a single color in \code{matplotlib.colors.CSS4_COLORS.keys()} e.g. \code{"black"};  OR: A vector of hex codes with the same length as the number of velocity clusters being plotted e.g., \code{c("#bfe5a0", "#9e0242", "#d8434e", "#f67b4a", "#5e4fa2")}.}
 
 \item{label_fontsize}{Font size of ligand labels}
 

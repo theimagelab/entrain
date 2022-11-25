@@ -440,7 +440,7 @@ plot_principal_graph <- function(cds,
     }
     
     g <- g +
-        monocle3:::monocle_theme_opts() +
+        ggplot2::theme_classic() +
         xlab(paste(reduction_method, 1)) +
         ylab(paste(reduction_method, 2)) +
         theme(legend.key = element_blank()) +

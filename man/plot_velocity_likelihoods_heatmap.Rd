@@ -10,7 +10,8 @@ plot_velocity_likelihoods_heatmap(
   n_top_genes = 5,
   color_low = "#f6ffff",
   color_high = "#01bfc4",
-  colorscale = "BuPu"
+  colorscale = "BuPu",
+  rescale = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ plot_velocity_likelihoods_heatmap(
 \item{color_high}{Hex code of upper limit.}
 
 \item{colorscale}{Name of a color palette to be passed to the palette argument of scale_fill_distiller. Overrides color_low and color_high.}
+
+\item{rescale}{Boolean. If TRUE, rescales all likelihoods between 0 and 1.}
 }
 \value{
 A gglot2 plot object.

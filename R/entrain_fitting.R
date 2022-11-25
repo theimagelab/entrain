@@ -535,7 +535,7 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                                      covariance_cutoff = 0.05,
                                      lr_network, ligand_target_matrix, export_cds=TRUE
 ) {
-    if (!requireNamespace("monocle3", quietly = TRUE) | requireNamespace("SeuratWrappers", quietly = TRUE) | requireNamespace("SingleCellExperiment", quietly = TRUE)) {
+    if (!requireNamespace("monocle3", quietly = TRUE) | !requireNamespace("SeuratWrappers", quietly = TRUE) | !requireNamespace("SingleCellExperiment", quietly = TRUE)) {
         stop("Please install monocle3, SeuratWrappers and SingleCellExperiment to use get_traj_ligands_monocle")  
     }
     
@@ -586,7 +586,7 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
         else {
             message("Using pre-generated Monocle trajectory in argument cds.")
             if (is.null(root_cells) == TRUE & is.null(root_pr_nodes) == TRUE ) {
-                cds <- monocle3::order_cells(cds_graph)
+                cds <- monocle3::order_cells(cds)
             } else if (!is.null(root_cells) & is.null(root_pr_nodes) ) {
                 message("Ordering cells with argument root_cells. If you have already run monocle3::order_cells(), set root_cells = NULL and root_pr_nodes = NULL.")
                 cds <- monocle3::order_cells(cds, root_cells = root_cells)
