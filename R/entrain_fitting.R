@@ -146,7 +146,7 @@ get_branch_membership <- function(cds, reduction_method="UMAP") {
 
 #' @noRd
 get_branch_genes_corr <- function(branch_expr, pseudotime, quantile_cutoff = 0.90, slot='data'){
-    correl <- corr(pseudotime,t(branch_expr))
+    correl <- cor(pseudotime,t(branch_expr))
     correl[is.na(correl)] <- 0
     correl <- abs(correl)
     result <- data.frame(as.numeric(correl), row.names=rownames(branch_expr))
