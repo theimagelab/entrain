@@ -8,7 +8,7 @@ get_skeleton <- function(g) {
     }
     get_deg2 <- function(x) {
         dd <- igraph::degree(x)
-        trim <- igraph::V(x)[names(dd[dd==2])]    
+        trim <- igraph::V(x)[names(dd[dd==2])]
     }
     ng <- g
     trim <- get_deg2(ng)
@@ -32,7 +32,7 @@ assign_branch_to_nodes <- function(skeleton, principal_igraph) {
         )
     }
     # a branch is defined as the shortest path between any two nodes of degree!=2 (i.e. a terminus or a branch point)
-    
+
     branches <- igraph::as_edgelist(skeleton, names = TRUE)
     principal_nodes <- data.frame(vertex=igraph::V(principal_igraph)$name, branch=NA)
     colnames(principal_nodes) <- c("vertex","assigned_branch")
@@ -51,7 +51,7 @@ assign_branch_to_nodes <- function(skeleton, principal_igraph) {
                                 weights=NA)
         branch_nodes <- names(branch$vpath[[1]])
         branch_name <- paste(p1, p2, sep=".")
-        indices <- match( branch_nodes, principal_nodes$vertex) 
+        indices <- match( branch_nodes, principal_nodes$vertex)
         principal_nodes[indices,]$assigned_branch <- branch_name
     }
     return(principal_nodes)
@@ -76,7 +76,7 @@ cells_between_vertices <- function(endpoint_nodes, cds) {
     cell_to_vertex_df$vertex_name <- paste0("Y_",cell_to_vertex_df[,1])
     principal_igraph <- cds@principal_graph$UMAP
     skeleton <- get_skeleton(principal_igraph)
-    
+
     principal_nodes <- data.frame(vertex=igraph::V(principal_igraph)$name, branch=NA)
     colnames(principal_nodes) <- c("vertex","assigned_branch")
 
@@ -123,25 +123,35 @@ get_branch_membership <- function(cds, reduction_method="UMAP") {
     principal_igraph <- cds@principal_graph[[reduction_method]]
     skeleton <- get_skeleton(principal_igraph) #create skeleton graph
     # each edge on skeleton is a branch.
-    
-    principal_nodes_assigned_branch <- assign_branch_to_nodes(skeleton, principal_igraph) 
-    
+
+    principal_nodes_assigned_branch <- assign_branch_to_nodes(skeleton, principal_igraph)
+
     cell_assigned_vertices <- as.data.frame(cds@principal_graph_aux[[reduction_method]]$pr_graph_cell_proj_closest_vertex)
     cell_assigned_vertices <- as.data.frame(apply(cell_assigned_vertices, FUN=function(x) { paste("Y_",x,sep="")}, MARGIN=1))
     cell_assigned_vertices$cell <- rownames(cell_assigned_vertices)
     colnames(cell_assigned_vertices) <- c("vertex", "cell")
-    
+
     #assign branch label to cells with a left join
     cells_assigned_branch = dplyr::left_join(cell_assigned_vertices, principal_nodes_assigned_branch)
-    
+
     result <- as.character(cells_assigned_branch$assigned_branch)
     names(result) <- cells_assigned_branch$cell
-    
-    #update cds 
+
+    #update cds
     cds@principal_graph_aux[[reduction_method]]$cell_branch <- result
     cds@colData$branch <- result
     cds@colData$pseudotime<-cds@principal_graph_aux$UMAP$pseudotime
     cds
+}
+
+#' @noRd
+get_branch_genes_corr <- function(branch_expr, pseudotime, quantile_cutoff = 0.90, slot='data'){
+    correl <- corr(pseudotime,t(branch_expr))
+    correl[is.na(correl)] <- 0
+    correl <- abs(correl)
+    result <- data.frame(as.numeric(correl), row.names=rownames(branch_expr))
+    colnames(result) <- c("Correlations")
+    return(result)
 }
 
 #' @noRd
@@ -163,10 +173,10 @@ get_branch_genes_covar<- function(branch_expr, pseudotime, quantile_cutoff = 0.9
 #' @noRd
 get_branch_correlated_genes_regress <- function(branch_expr, branch_cells){
     branch_pseudotime <- branch_cells$pseudotime
-    
+
     corr <- cor(branch_pseudotime,t(branch_expr))
     corr[is.na(corr)] <- 0
-    
+
     corr <- abs(corr)
     branch_corr_genes_regress <- as.data.frame(corr)
 }
@@ -194,10 +204,10 @@ get_expressed_receptors <- function(receivers_seuobj, expression_proportion_cuto
 
 #' @noRd
 get_active_ligand_receptor <- function(receivers_seuobj, expressed_ligands, expression_proportion_cutoff = 0.10, lr_network, ligand_target_matrix) {
-    
+
     #subset to genes that are expressed in at least <expression_proportion_cutoff>% of the cells
     expressed_receptors <- get_expressed_receptors(receivers_seuobj, expression_proportion_cutoff, lr_network)
-    lr_network_expressed <- lr_network %>% dplyr::filter(from %in% expressed_ligands & to %in% expressed_receptors) 
+    lr_network_expressed <- lr_network %>% dplyr::filter(from %in% expressed_ligands & to %in% expressed_receptors)
     assertthat::assert_that(nrow(lr_network_expressed) > 0, msg = paste("No active ligand-receptor pairs found. ",
                                                                       "To fix this, reduce the value of expression_proportion_cutoff",
                                                                       "or check that your sender and receiver cells are in fact communicating",
@@ -209,23 +219,23 @@ get_active_ligand_receptor <- function(receivers_seuobj, expressed_ligands, expr
 get_ligand_trajectory_scores_regression <- function(pseudotime_genes, active_ligand_potentials){
     assertthat::assert_that(ncol(active_ligand_potentials) > 0, msg = paste("Subsetted ligand_target_matrix has no ligands",
                                                                             "Check that your thresholds have captured active ligands"))
-    
+
     intersection_genes <- base::intersect(rownames(active_ligand_potentials), row.names(pseudotime_genes))
     potentials_intersection <- active_ligand_potentials[intersection_genes,]
     pseudotime_genes_intersection <- pseudotime_genes[intersection_genes,]
     rf <- randomForest::randomForest(x=potentials_intersection, y=pseudotime_genes_intersection, importance=TRUE)
-    
+
     list(genes=pseudotime_genes_intersection, model=rf)
 }
 
 #' @noRd
 get_ligand_trajectory_scores <- function(pseudotime_associated_genes_bool, active_ligand_potentials, importance_measure = "MeanDecreaseGini"){
     intersection_genes <- base::intersect(rownames(active_ligand_potentials), names(pseudotime_associated_genes_bool))
-    
+
     potentials_intersection<-active_ligand_potentials[intersection_genes,]
     pseudotime_associated_genes_intersection<-as.factor(pseudotime_associated_genes_bool[intersection_genes])
     rf <- randomForest::randomForest(x=potentials_intersection, y=pseudotime_associated_genes_intersection, importance=TRUE)
-    
+
     importances<-sort(rf$importance[,importance_measure], decreasing=TRUE)
     list(importances, pseudotime_associated_genes_bool, rf)
 }
@@ -241,15 +251,15 @@ add_pseudotime_data_to_seuobj <- function(cds,
 }
 
 #' @noRd
-add_branch_data_to_seuobj <- function(cds, 
+add_branch_data_to_seuobj <- function(cds,
                                       obj,
                                       reduction_method = "UMAP") {
-    
-    
+
+
     if (is.null(obj@misc$entrain$dp_mst) == TRUE) {
         obj@misc$entrain$dp_mst <- list()
     }
-    
+
     obj@meta.data$branch <- cds@colData$branch
     return(obj)
 }
@@ -257,9 +267,9 @@ add_branch_data_to_seuobj <- function(cds,
 #' @noRd
 get_background_genes_path <- function(path_expr, pct = 0.05) {
     all_genes <- row.names(path_expr)
-    
+
     n_cells <- ncol(path_expr)
-    n_cells_expressing<-Matrix::rowSums( path_expr > 0 )  
+    n_cells_expressing<-Matrix::rowSums( path_expr > 0 )
     expressed_genes <- names(n_cells_expressing[n_cells_expressing > pct*n_cells])
 }
 
@@ -283,8 +293,8 @@ get_cell_xy <- function(cell_name, obj, reduction_name) {
     return(c(x,y))
 }
 
-#' @title Interactive selection of sender clusters. 
-#' @description Choosing potential sender cell clusters in a GUI. Inspired from Monocle3's interactive workflow. 
+#' @title Interactive selection of sender clusters.
+#' @description Choosing potential sender cell clusters in a GUI. Inspired from Monocle3's interactive workflow.
 #' @param sender_obj Seurat object containing niche cell data
 #' @param sender_cluster_key column name in sender_obj@meta.data that denotes the clusters.
 #' @param reduction_key Seurat reduction key for dimension reduction visualization.
@@ -299,23 +309,23 @@ get_senders_interactive <- function(sender_obj,
                                     reduction_key = NULL,
                                     lr_network
                                     ) {
-    
+
     if (is.null(reduction_key)) {
         reduction_key <- sender_obj@reductions[[1]]@key
         message(paste("No Reduction key supplied, defaulting to", reduction_key))
     }
-    
+
     cluster_df <- data.frame(matrix(NA, nrow = length(unique(sender_obj@meta.data[[sender_cluster_key]])), ncol=2))
     colnames(cluster_df) <- c("cluster", "colour")
     cluster_df$cluster <- sender_obj@meta.data[[sender_cluster_key]] %>% unique() %>% sort()
     cluster_df$colour <- scales::hue_pal()(nrow(cluster_df))
-    
+
     ui <- shiny::fluidPage(
         shiny::titlePanel("Choose sender clusters interactively."),
-        
+
         # Sidebar layout with input and output definitions ----
         shiny::sidebarLayout(
-            
+
             # Sidebar panel for inputs ----
             shiny::sidebarPanel(
                 # Visualization controls
@@ -325,11 +335,11 @@ get_senders_interactive <- function(sender_obj,
                 shiny::checkboxGroupInput("selected_clusters", "Selected Clusters:",
                                    choices = cluster_df$cluster),
                 shiny::actionButton("preview", "Preview expressed ligands"),
-                
-                shiny::numericInput("proportion_cutoff", "Expression proportion cutoff:", 
+
+                shiny::numericInput("proportion_cutoff", "Expression proportion cutoff:",
                              0.01, min = 0, max = 1,
                              step = 0.01),
-                
+
                 shiny::actionButton("clear", "Clear all"),
                 # done button
                 shiny::actionButton("done", "Done"),
@@ -341,7 +351,7 @@ get_senders_interactive <- function(sender_obj,
                     shiny::tags$li("Click 'Done' to return the selected ligands.")
                 )
             ),
-            
+
             # Main panel for displaying outputs ----
             shiny::mainPanel(
                 shiny::plotOutput("plot1", height="auto",
@@ -353,19 +363,19 @@ get_senders_interactive <- function(sender_obj,
             )
         )
     )
-    
+
     server <- function(input, output, session) {
 
         limits <- shiny::reactiveValues(
             x_range=NULL,
             y_range=NULL
         )
-        
+
         selected_df <- shiny::reactive({
             cluster_selection <- input$selected_clusters
             cluster_df %>% dplyr::filter(cluster %in% cluster_selection)
         })
-        
+
         expressed_ligands <- shiny::reactiveValues(
             expressed_ligands_df = NULL,
             expressed_ligands_df_visual = NULL
@@ -374,19 +384,19 @@ get_senders_interactive <- function(sender_obj,
             updated <- update_ligands_and_plot()
             expressed_ligands$expressed_ligands_df <- updated[[1]]
             expressed_ligands$expressed_ligands_df_visual <- updated[[2]]
-            
+
             output$ligands <- DT::renderDataTable(
                 expressed_ligands$expressed_ligands_df_visual,
-                options = list(scrollY="300px", 
+                options = list(scrollY="300px",
                                scrollX=TRUE,
                                pageLength = 30, info = FALSE,
                                lengthMenu = list(c(30, -1), c("30", "All")))
             )
-            
+
         })
-            
+
         output$plot1 <- shiny::renderPlot({
-            
+
             cluster_df[cluster_df$cluster %in% selected_df()$cluster, "colour"] <- "#3B3B3B"
             colourscale <- cluster_df$colour
             names(colourscale) <- cluster_df$cluster
@@ -395,22 +405,22 @@ get_senders_interactive <- function(sender_obj,
                                            group.by = sender_cluster_key,
                                            cols = colourscale,
                                            combine=FALSE)[[1]]
-            
-            suppressMessages(seurat_plot + 
+
+            suppressMessages(seurat_plot +
                 ggplot2::coord_cartesian(xlim = limits$x_range, ylim = limits$y_range, expand = FALSE)
             )
 
         }, height = function() {
             session$clientData$output_plot1_width
         })
-        
+
         if (is.null(expressed_ligands)) {
             output$ligands <- shiny::renderText( {
                 "Click preview to view expressed ligands"}
             )
         }
-       
-    
+
+
         observeEvent(input$clear, {
             updateCheckboxGroupInput(session, "selected_clusters",
                                      choices=cluster_df$cluster,
@@ -418,7 +428,7 @@ get_senders_interactive <- function(sender_obj,
             expressed_ligands$expressed_ligands_df = NULL
             expressed_ligands$expressed_ligands_df_visual = NULL
         })
-        
+
         shiny::observeEvent(input$done, {
             shiny::stopApp( update_ligands_and_plot()[[1]]) # value here is the returned data (expressed ligands)
         })
@@ -439,11 +449,11 @@ get_senders_interactive <- function(sender_obj,
             limits$x_range <- NULL
             limits$y_range <- NULL
         })
-        
+
         update_ligands_and_plot = function() {
             cutoff <- input$proportion_cutoff
             sender_cluster_names <- selected_df()$cluster
-                
+
             if (length(sender_cluster_names) > 0) {
                 expressed_ligands_df <- data.frame(matrix(0, nrow=0, ncol=0))
                 expressed_ligands_df_visual <- data.frame(matrix(0, nrow=1, ncol=0))
@@ -461,7 +471,7 @@ get_senders_interactive <- function(sender_obj,
                 return(list(expressed_ligands_df, expressed_ligands_df_visual))
             } else {
                 return(NULL)
-            }            
+            }
         }
     }
     sel <- shiny::runApp(shiny::shinyApp(ui, server))
@@ -509,10 +519,11 @@ get_expressed_ligands <- function(obj, sender_cluster_key,
 #' @param covariance_cutoff Remove the bottom `covariance_cutoff` fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).
 #' @param precomputed_umap If you have a precomputed UMAP on your receiver cells that you wish to build a monocle trajectory on, then set this to the name of your precomputed embedding e.g. precomputed_umap = 'umap'
 #' @param sender_reduction_key Only applicable if sender_obj is not NULL: The dimension reduction key of sender_obj that you wish to use,
+#' @param metric One of "Covariances" or "Correlations". Default "Covariances". Determines whether to use pseudotime covariance or pseudotime correlation in the calculation of TRAINing genes.
 #' @import dplyr
-#' @return a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result. 
+#' @return a Seurat object with ligand velocity results in obj$misc$entrain$velocity_result.
 #' @export
-#' 
+#'
 get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                                      cds = NULL,
                                      sender_cluster_key = NULL,
@@ -528,17 +539,18 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                                      use_partition = TRUE,
                                      precomputed_umap=NULL,
                                      prune_graph=T, close_loop = F,
-                                     overwrite=FALSE, 
+                                     overwrite=FALSE,
                                      reduction_key = "MonocleUMAP_",
                                      sender_reduction_key = "umap",
                                      expression_proportion_cutoff = 0.01,
                                      covariance_cutoff = 0.05,
+                                     metric = "Covariances",
                                      lr_network, ligand_target_matrix, export_cds=TRUE
 ) {
     if (!requireNamespace("monocle3", quietly = TRUE) | !requireNamespace("SeuratWrappers", quietly = TRUE) | !requireNamespace("SingleCellExperiment", quietly = TRUE)) {
-        stop("Please install monocle3, SeuratWrappers and SingleCellExperiment to use get_traj_ligands_monocle")  
+        stop("Please install monocle3, SeuratWrappers and SingleCellExperiment to use get_traj_ligands_monocle")
     }
-    
+
     if (is.null(obj@misc$monocle_graph) || overwrite==TRUE ) {
         if (!is.null(obj@misc$entrain$paths)) {
             message("You are generating a new trajectory but existing Entrain analysis found. The existing analysis will be overwritten.")
@@ -550,7 +562,7 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
             cds <- SeuratWrappers::as.cell_data_set(obj,  assays = DefaultAssay(obj))
             #below line inserts Seurat object original umap embedding into the monocle workflow.
             cds <- monocle3::preprocess_cds(cds, num_dim=num_dim)
-            
+
             if (!is.null(precomputed_umap)) {
                 cds@int_colData@listData$reducedDims$UMAP <- obj@reductions[[precomputed_umap]]@cell.embeddings
             } else {
@@ -559,7 +571,7 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                 cds_embedding <- cds@int_colData@listData$reducedDims$UMAP
                 colnames(cds_embedding) <- c("Monocle_1", "Monocle_2")
                 obj[[reduction_key]]<-Seurat::CreateDimReducObject(embeddings = cds_embedding , key = reduction_key, assay = DefaultAssay(obj))
-                
+
             }
 
             cds <- monocle3::cluster_cells(cds, reduction_method = "UMAP")
@@ -570,7 +582,7 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
                                                close_loop=close_loop,
                                                learn_graph_control=graph_settings
             )
-            
+
             if (is.null(root_cells) == TRUE & is.null(root_pr_nodes) == TRUE ) {
                 cds <- monocle3::order_cells(cds_graph)
             } else if (!is.null(root_cells) & is.null(root_pr_nodes)) {
@@ -609,35 +621,35 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
     else {
         message("Existing Monocle trajectory found, skipping graph learning. If you wish to build a new Monocle trajectory, set overwrite=TRUE")
         cds <- obj@misc$entrain$monocle_cds
-        
+
     }
-    
+
     if (identical(obj, sender_obj)) {
         stop("obj is the same as sender_obj. Set sender_obj = NULL if your sender and receiver cells are contained in the single seurat object.")
     } else if (is.null(sender_obj)) {
         sender_obj <- obj
         sender_reduction_key = reduction_key
     }
-    
+
     if (is.null(expressed_ligands)) {
         message("expressed_ligands is NULL, selecting sender clusters")
-        
+
         if (is.null(sender_cluster_key)) {
-            sender_obj <- 
+            sender_obj <-
             stop("No sender_cluster_key supplied. Please supply a sender_cluster_key: The column name in metadata that denotes sender cell clusters.")
         }
-        
+
         if (is.null(sender_cluster_names)) {
             message("sender_cluster_names is NULL, selecting sender clusters interactively.")
             assertthat::assert_that(!is.null(lr_network), msg = "If you are in interactive mode, please supply lr_network to get_traj_ligands_monocle()")
-            expressed_ligands <- get_senders_interactive(sender_obj, 
+            expressed_ligands <- get_senders_interactive(sender_obj,
                                                          sender_cluster_key,
                                                          reduction_key = sender_reduction_key,
                                                          lr_network = lr_network)
-            expressed_ligands <- expressed_ligands 
+            expressed_ligands <- expressed_ligands
         } else {
 
-            expressed_ligands <- get_expressed_ligands(obj = sender_obj, 
+            expressed_ligands <- get_expressed_ligands(obj = sender_obj,
                                                        sender_cluster_key = sender_cluster_key,
                                                        sender_cluster_names = sender_cluster_names,
                                                        proportion_cutoff = expression_proportion_cutoff,
@@ -649,13 +661,14 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
         selected_paths <- choose_path(cds, return_list=TRUE)
         for (path in selected_paths) {
             path_cell_names <- path$cells
-            obj <- get_path_ligands(obj, expressed_ligands=expressed_ligands,  
+            obj <- get_path_ligands(obj, expressed_ligands=expressed_ligands,
                                   path_cell_names = path_cell_names,
                                   return_model=TRUE,
                                   reduction_name = reduction_key,
                                   lr_network=lr_network, ligand_target_matrix=ligand_target_matrix,
-                                  covariance_cutoff = covariance_cutoff
-                                  ) 
+                                  covariance_cutoff = covariance_cutoff,
+                                  metric = metric
+                                  )
         }
     } else {
         if ( !is.null(path_nodes) & is.null(path_cell_names) ) {
@@ -667,16 +680,18 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
         } else {
             stop("Please supply only one of path_nodes and path_cell names")
         }
-    
-        obj<-get_path_ligands(obj, expressed_ligands=expressed_ligands,
-                                  path_cell_names = path_cell_names,
-                                  return_model=TRUE,
-                                  reduction_name = reduction_key,
-                                  lr_network=lr_network, ligand_target_matrix=ligand_target_matrix,
-                                  covariance_cutoff = covariance_cutoff
+
+        obj<-get_path_ligands(obj,
+                              expressed_ligands=expressed_ligands,
+                              path_cell_names = path_cell_names,
+                              return_model=TRUE,
+                              reduction_name = reduction_key,
+                              lr_network=lr_network, ligand_target_matrix=ligand_target_matrix,
+                              covariance_cutoff = covariance_cutoff,
+                              metric = metric
             )
     }
-  
+
     if (export_cds==TRUE) {
         message("Exporting cds...")
         obj@misc$entrain$monocle_cds <- cds
@@ -688,26 +703,28 @@ get_traj_ligands_monocle <- function(obj, sender_obj = NULL,
 #' @description Runs Entrain to identify ligands responsible for trajectory dynamics. Requires pseudotime labels for each cell in a column in metadata with name pseudotime_key
 #' @param obj A seurat object  with cell pseudotimes contained in a metadata column with column name pseudotime_key.
 #' @param pseudotime_key Column name in colnames(obj@meta.data) that contains cell pseudotime values.
-#' @param cluster_key Column name in colnames(obj@meta.data) corresponding to 
+#' @param cluster_key Column name in colnames(obj@meta.data) corresponding to
 #' @param path_cell_names a vector of cell names (must be in colnames(obj)), defining cells in a trajectory path for which associated ligands will be calculated.
 #' @param return_model If TRUE, will additionally save the raw random forest object in obj@misc$entrain$paths$path_name$model
 #' @param expressed_ligands Character vector of active ligands in dataset (must be in rownames(obj))
 #' @param lr_network NicheNet ligand-receptor pairs data file.
 #' @param ligand_target_matrix NicheNet ligand-target data file.
 #' @param reduction_name Seurat reduction key for dimension reduction visualization.
+#' @param metric One of "Covariances" or "Correlations". Default "Covariances". Determines whether to use pseudotime covariance or pseudotime correlation in the calculation of TRAINing genes.
 #' @param covariance_cutoff Remove the bottom `covariance_cutoff` fraction of covariances (e.g. 0.10 = bottom 10 percent of genes, ranked by covariance, removed from later analysis).
 #' @import dplyr
 #' @return a Seurat object with ligand trajectory results in obj$misc$entrain$paths$path_name
 #' @export
-get_path_ligands <- function(obj, expressed_ligands, 
-                             lr_network, ligand_target_matrix, 
-                             path_cell_names, 
+get_path_ligands <- function(obj, expressed_ligands,
+                             lr_network, ligand_target_matrix,
+                             path_cell_names,
                              pseudotime_key="pseudotime",
                              cluster_key = NULL,
                              reduction_name = "MonocleUMAP",
+                             metric = "Covariances",
                              covariance_cutoff = 0.05,
                              return_model = FALSE) {
-    
+
     path_seuobj <- subset(obj, cells=path_cell_names)
     path_pseudotime <- path_seuobj@meta.data[[pseudotime_key]]
 
@@ -715,29 +732,29 @@ get_path_ligands <- function(obj, expressed_ligands,
         start_node <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==min(path_seuobj@meta.data[,pseudotime_key]),"vertex"] %>% as.character()
         end_node <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==max(path_seuobj@meta.data[,pseudotime_key]),"vertex"] %>% as.character()
     }
-    
+
     if (!is.null(cluster_key)) {
         start_cluster <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==min(path_seuobj@meta.data[,pseudotime_key]), cluster_key, drop=FALSE]
-        end_cluster <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==max(path_seuobj@meta.data[,pseudotime_key]), cluster_key, drop=FALSE] 
+        end_cluster <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==max(path_seuobj@meta.data[,pseudotime_key]), cluster_key, drop=FALSE]
         path_name <- paste(start_cluster, end_cluster, sep="-")
-        
+
         if (!is.null(path_seuobj@meta.data$vertex)) {
             path_name <- paste(path_name,"_", start_node[1],"-", end_node[1], sep="")
         }
-        
+
     } else if (!is.null(path_seuobj@meta.data$vertex)) {
         path_name <- paste(start_node[1],"-", end_node[1], sep="")
     } else {
         stop("get_path_ligands requires either a pseudotime column passed to pseudotime_key or a cell cluster column passed to cluster_key")
     }
-    
 
-    
+
+
     midpoint_cell <- path_seuobj@meta.data[path_seuobj@meta.data$pseudotime==sort(path_pseudotime)[round(length(path_pseudotime)/2)],] %>% row.names()  %>% as.character()
     midpoint_xy <- get_cell_xy(midpoint_cell, path_seuobj, reduction_name)
-    
+
     message(paste("Running Entrain on path:", path_name, sep=" "))
-    
+
     n_inf_pseudotime_cells <-sum(is.infinite(path_pseudotime))
     if (n_inf_pseudotime_cells > 0 ) {
         message(paste(as.character(n_inf_pseudotime_cells), " cells in branch ", path_name[1], " possess Inf pseudotime. Removing cells from analysis. To fix this, reassign root nodes such that all cells are connected to a root node.", sep="") )
@@ -745,43 +762,50 @@ get_path_ligands <- function(obj, expressed_ligands,
         path_seuobj <- path_seuobj[,non_inf_pseudotime_indices]
         path_pseudotime <- path_seuobj@meta.data[[pseudotime_key]]
     }
-    
+
     path_expr <- as.matrix(GetAssayData(path_seuobj, slot = "data"))
-    
+
     active_lr <- get_active_ligand_receptor(receivers_seuobj = path_seuobj, expressed_ligands = expressed_ligands, lr_network = lr_network, ligand_target_matrix = ligand_target_matrix)
     active_ligands<-active_lr$from %>% unique()
     active_receptors<-active_lr$to %>% unique()
     active_ligand_potentials <- ligand_target_matrix[,active_ligands]
-    
+
     background_genes <- get_background_genes_path(path_expr, pct = 0.10)
     path_expr_bg<-path_expr[background_genes,]
-    pseudotime_covars <- get_branch_genes_covar(path_expr_bg, path_seuobj@meta.data$pseudotime)
-    
+
+    if (metric == "Covariances") {
+        training_genes <- get_branch_genes_covar(path_expr_bg, path_seuobj@meta.data$pseudotime)
+    } else if (metric == "Correlations") {
+        training_genes <- get_branch_genes_corr(path_expr_bg, path_seuobj@meta.data$pseudotime)
+    } else {
+        stop("metric should be one of \"Covariances\" or \"Correlations\"")
+    }
+
         # Bottom 5% of covariances (by absolute value) likely noise.
-    cutoff<-quantile(pseudotime_covars[,"Covariances"], covariance_cutoff) 
-    top_pseudotime_covars <- subset(pseudotime_covars, Covariances > cutoff) 
-    ligand_scores_result<-get_ligand_trajectory_scores_regression(top_pseudotime_covars, active_ligand_potentials)
+    cutoff<-quantile(training_genes[, metric], covariance_cutoff)
+    top_training_genes <- subset(training_genes, Covariances > cutoff)
+    ligand_scores_result<-get_ligand_trajectory_scores_regression(top_training_genes, active_ligand_potentials)
     names(ligand_scores_result) <- c(path_name[1], "model")
     importances<-sort(ligand_scores_result$model$importance[,"IncNodePurity"], decreasing=TRUE)
-    
+
     ## add to seurat
     if (is.null(obj@misc$entrain$paths) == TRUE) {
         obj@misc$entrain$paths <- list()
     }
-    
+
     path_cell_names<-colnames(path_seuobj)
-    results <- list(cell_pseudotimes = data.frame(path_cell_names, 
-                                                  path_pseudotime), 
-                    pseudotime_associated_genes = pseudotime_covars,
-                    top_pseudotime_genes = rownames(top_pseudotime_covars),
+    results <- list(cell_pseudotimes = data.frame(path_cell_names,
+                                                  path_pseudotime),
+                    pseudotime_associated_genes = training_genes,
+                    top_pseudotime_genes = rownames(top_training_genes),
                     path_ligands_importances = importances,
                     path_midpoint = list(midpoint_cell, midpoint_xy),
                     active_network = active_lr)
-    
+
     if (return_model == TRUE) {
         results[["model"]]=ligand_scores_result$model
     }
-    
+
     if (is.null(obj@misc$entrain$paths[[path_name]])) {
         obj@misc$entrain$paths[[path_name]] <- results
     } else {
@@ -793,7 +817,7 @@ get_path_ligands <- function(obj, expressed_ligands,
         message(paste("Duplicate path name found. Appending current path as: ", path_name) )
         obj@misc$entrain$paths[[path_name]] <- results
     }
-    
+
     return(obj)
 }
 
@@ -808,7 +832,9 @@ get_path_ligands <- function(obj, expressed_ligands,
 #' @param window_pct Size of the window, as a percentage of the number of cells in a path.
 #' @param n_top_ligands Number of top ligands to consider in the cellwise analysis.
 #' @param n_top_genes Number of top dynamical genes to consider in the cellwise analysis. Because we have already evaluated the ligand importances for a branch, we restrict our more granular analysis to the top genes and ligands.
-#' @param slot Slot of Seurat object from which to retrieve expression data. 
+#' @param slot Slot of Seurat object from which to retrieve expression data.
+#' @param metric One of "Covariances" or "Correlations". Default "Covariances". Determines whether to use pseudotime covariance or pseudotime correlation in the calculation of TRAINing genes.
+
 
 #' @return a Seurat object updated with per-cell ligand influence score in `obj@misc$entrain$path$path_name$cellwise_influences`, as well as a column in `obj@meta.data`
 #' @export
@@ -820,7 +846,8 @@ cellwise_influences <- function(obj,
                                 window_pct=0.30,
                                 n_top_ligands=5,
                                 n_top_genes=500,
-                                slot="data"
+                                slot="data",
+                                metric = "Covariances"
 ) {
     if (!requireNamespace("imputeTS", quietly = TRUE)) {
         stop(
@@ -831,9 +858,9 @@ cellwise_influences <- function(obj,
     if (is.null(ligand_target_matrix)) {
         stop("Please supply a ligand_target_matrix.")
     }
-    
+
     paths<-names(obj@misc$entrain$paths)
-    
+
     for (path in paths) {
         pathdata<-obj@misc$entrain$paths[[path]]
         #genes<-pathdata$pseudotime_associated_genes %>% arrange(. ,desc(.)) %>% rownames() %>% head(n_top_genes)
@@ -842,13 +869,13 @@ cellwise_influences <- function(obj,
         pseudotimes <- pseudotimes %>% arrange(path_pseudotime)
         half_win <- pseudotimes %>% nrow(.)*(window_pct/2)
         half_win <- round(half_win)
-        
+
         if (step_size < 1) {
             i <- round(nrow(pseudotimes)*step_size)
         } else {
             i <- step_size
         }
-        
+
         # get expr matrix
         path_obj<-subset(obj, cells=pseudotimes$path_cell_names)
         path_expr <- Seurat::GetAssayData(path_obj, slot = slot)
@@ -865,9 +892,9 @@ cellwise_influences <- function(obj,
             cellwise_influences <- data.frame(matrix(nrow=nrow(pseudotimes), ncol=1+length(ligands)))
             colnames(cellwise_influences) <- c(names(importances), meta_colname )
         }
-        
+
         rownames(cellwise_influences) <- pseudotimes$path_cell_names
-        
+
         n=1
         while (n<nrow(pseudotimes)+1) {
             if (n<half_win) {
@@ -877,45 +904,51 @@ cellwise_influences <- function(obj,
             } else {
                 window_pseudotimes=pseudotimes[seq(n-half_win,n+half_win),]
             }
-            
+
             window_cells<-window_pseudotimes$path_cell_names
             background_genes <- get_background_genes_path(path_expr, pct = 0.10)
-            
+
             window_expr <- path_expr[background_genes,window_cells]
-            
-            #get correlation for each row. 
+
+            #get correlation for each row.
             window_expr <- as.matrix(window_expr)
-            
-            covars <- get_branch_genes_covar(window_expr, window_pseudotimes$path_pseudotime)
-            
-            if (sum(is.na(covars)) > 0) {
-                covars <- na.omit(t(covars)) 
-                covars<-covars[,1]
+
+            if (metric == "Covariances") {
+                training_genes <- get_branch_genes_covar(window_expr, window_pseudotimes$path_pseudotime)
+            } else if (metric == "Correlations") {
+                training_genes <- get_branch_genes_corr(window_expr, window_pseudotimes$path_pseudotime)
+            } else {
+                stop("metric should be one of \"Covariances\" or \"Correlations\"")
             }
-            covars <- abs(covars)
-            covars <- covars[order(covars[,1]),,drop=FALSE] %>% tail(n_top_genes)
-            genes<-rownames(covars)
+
+            if (sum(is.na(training_genes)) > 0) {
+                training_genes <- na.omit(t(training_genes))
+                training_genes<-training_genes[,1]
+            }
+            training_genes <- abs(training_genes)
+            training_genes <- training_genes[order(training_genes[,1]),,drop=FALSE] %>% tail(n_top_genes)
+            genes<-rownames(training_genes)
             genes<-base::intersect(genes, rownames(ligand_target_matrix))
-            
+
             w<-ligand_target_matrix[genes, names(importances)]
             if (length(importances) == 1){
                 w <- as.matrix(w)
             }
 
-            covars<-covars[genes,]
-            covars<-(covars-min(covars))/(max(covars)-min(covars))
-            names(covars) <- genes
+            training_genes<-training_genes[genes,]
+            training_genes<-(training_genes-min(training_genes))/(max(training_genes)-min(training_genes))
+            names(training_genes) <- genes
             w<-(w-min(w))/(max(w)-min(w))
 
-            rf = randomForest::randomForest(y=covars, x=w, importance=TRUE)
-            
+            rf = randomForest::randomForest(y=training_genes, x=w, importance=TRUE)
+
             rsq<-rf$rsq %>% tail(1)
             imps<-rf$importance[,"IncNodePurity"]
-            
+
             cellwise_influences[n,]<-c(imps, rsq)
             n<-n+i
         }
-        
+
         if (i > 1) {
             cellwise_influences <- apply(cellwise_influences,
                                          MARGIN=2,
@@ -935,14 +968,14 @@ cellwise_influences <- function(obj,
         temp <- merge(metadata, cellwise_influences, by.x=0, by.y=0, all.x=TRUE)
         temp <- transform(temp, row.names=Row.names, Row.names=NULL)
         temp[is.na(temp)] <- 0
-        
+
         # preserve row order with original object
         temp<-temp[match(rownames(temp), rownames(metadata)),]
-        
+
         obj@meta.data <- temp
-        
+
     }
-    
+
     return(obj)
 }
 
@@ -952,19 +985,19 @@ cellwise_influences <- function(obj,
 #' @param h5ad String denoting filename of h5ad from with to intersect genes with.
 #' @return A seurat object with features subsetted to the intersection of genes in obj and h5ad.
 intersect_genes = function(obj, h5ad) {
-    
+
     anndata <- reticulate::import("anndata")
     ad <- anndata$read_h5ad(h5ad)
     ad_genes <- ad$var_names$values
     obj_genes <- rownames(obj)
     intersection <- intersect(ad_genes, obj_genes)
-    
+
     result_obj <- subset(obj, features=intersection)
     return(result_obj)
 }
 
 #' @title Determine expressed genes of a cell type.
-#' @description  NicheNetR function to determine expressed genes of a cell type from a Seurat object single-cell RNA seq dataset or Seurat spatial transcriptomics dataset. 
+#' @description  NicheNetR function to determine expressed genes of a cell type from a Seurat object single-cell RNA seq dataset or Seurat spatial transcriptomics dataset.
 #' Function is modified from `nichenetr` v1.1.1 (GPL3.0): Browaeys, R., Saelens, W. & Saeys, Y. (2019). Nat Methods.
 #' Modified to deal with non-sparse matrices, and avoids the (non-trivial) installation of NicheNet.
 #' @param ident Name of cluster identity/identities of cells
@@ -982,9 +1015,9 @@ intersect_genes = function(obj, h5ad) {
 get_expressed_genes = function(ident, seurat_obj, pct = 0.1, assay_oi = NULL){
     requireNamespace("Seurat")
     requireNamespace("dplyr")
-    
+
     # input check
-    
+
     if (!"RNA" %in% names(seurat_obj@assays)) {
         if ("Spatial" %in% names(seurat_obj@assays)) {
             if (class(seurat_obj@assays$Spatial@data) != "matrix" &
@@ -1000,7 +1033,7 @@ get_expressed_genes = function(ident, seurat_obj, pct = 0.1, assay_oi = NULL){
         if (!("dgCMatrix" %in% class(seurat_obj@assays$RNA@data)))
             warning("RNA matrix is not sparse. Converting to sparse..")
             seurat_obj@assays$RNA@data <- Seurat::as.sparse(seurat_obj@assays$RNA@data)
-        
+
         if (class(seurat_obj@assays$RNA@data) != "matrix" &
             class(seurat_obj@assays$RNA@data) != "dgCMatrix") {
             warning("Seurat object should contain a matrix of normalized expression data. Check 'seurat_obj@assays$RNA@data' for default or 'seurat_obj@assays$integrated@data' for integrated data or seurat_obj@assays$SCT@data for when the single-cell transform pipeline was applied")
@@ -1025,21 +1058,21 @@ get_expressed_genes = function(ident, seurat_obj, pct = 0.1, assay_oi = NULL){
     if (sum(ident %in% unique(Idents(seurat_obj))) != length(ident)) {
         stop("One or more provided cell clusters is not part of the 'Idents' of your Seurat object")
     }
-    
+
     if(!is.null(assay_oi)){
         if(! assay_oi %in% Seurat::Assays(seurat_obj)){
             stop("assay_oi should be an assay of your Seurat object")
         }
     }
-    
+
     # Get cell identities of cluster of interest
-    
-    
+
+
     cells_oi = Seurat::Idents(seurat_obj) %>% .[Seurat::Idents(seurat_obj) %in%
                                             ident] %>% names()
-    
+
     # Get exprs matrix: from assay oi or from most advanced assay if assay oi not specifcied
-    
+
     if(!is.null(assay_oi)){
         cells_oi_in_matrix = intersect(colnames(seurat_obj[[assay_oi]]@data), cells_oi)
         exprs_mat = seurat_obj[[assay_oi]]@data %>% .[, cells_oi_in_matrix]
@@ -1090,11 +1123,11 @@ get_expressed_genes = function(ident, seurat_obj, pct = 0.1, assay_oi = NULL){
                 stop("Not all cells of interest are in your expression matrix (seurat_obj@assays$RNA@data). Please check that the expression matrix contains cells in columns and genes in rows.")
             exprs_mat = seurat_obj@assays$RNA@data %>% .[, cells_oi_in_matrix]
         }
-        
+
     }
-    
+
     # use defined cells and exprs matrix to get expressed genes
-    
+
     n_cells_oi_in_matrix = length(cells_oi_in_matrix)
     if (n_cells_oi_in_matrix < 5000) {
         genes = exprs_mat %>% apply(1, function(x) {
@@ -1105,7 +1138,7 @@ get_expressed_genes = function(ident, seurat_obj, pct = 0.1, assay_oi = NULL){
         splits = split(1:nrow(exprs_mat), ceiling(seq_along(1:nrow(exprs_mat))/100))
         genes = splits %>% lapply(function(genes_indices, exprs,
                                            pct, n_cells_oi_in_matrix) {
-            begin_i = genes_indices[1] 
+            begin_i = genes_indices[1]
             end_i = genes_indices[length(genes_indices)]
             exprs = exprs[begin_i:end_i, , drop = FALSE]
             genes = exprs %>% apply(1, function(x) {
