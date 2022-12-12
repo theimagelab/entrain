@@ -783,7 +783,7 @@ get_path_ligands <- function(obj, expressed_ligands,
 
         # Bottom 5% of covariances (by absolute value) likely noise.
     cutoff<-quantile(training_genes[, metric], covariance_cutoff)
-    top_training_genes <- subset(training_genes, Covariances > cutoff)
+    top_training_genes <- subset(training_genes, metric > cutoff)
     ligand_scores_result<-get_ligand_trajectory_scores_regression(top_training_genes, active_ligand_potentials)
     names(ligand_scores_result) <- c(path_name[1], "model")
     importances<-sort(ligand_scores_result$model$importance[,"IncNodePurity"], decreasing=TRUE)
