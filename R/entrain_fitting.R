@@ -728,6 +728,7 @@ get_path_ligands <- function(obj, expressed_ligands,
     path_seuobj <- subset(obj, cells=path_cell_names)
     path_pseudotime <- path_seuobj@meta.data[[pseudotime_key]]
 
+
     if (!is.null(path_seuobj@meta.data$vertex)) {
         start_node <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==min(path_seuobj@meta.data[,pseudotime_key]),"vertex"] %>% as.character()
         end_node <- path_seuobj@meta.data[path_seuobj@meta.data[,pseudotime_key]==max(path_seuobj@meta.data[,pseudotime_key]),"vertex"] %>% as.character()
@@ -781,9 +782,9 @@ get_path_ligands <- function(obj, expressed_ligands,
         stop("metric should be one of \"Covariances\" or \"Correlations\"")
     }
 
-        # Bottom 5% of covariances (by absolute value) likely noise.
-    cutoff<-quantile(training_genes[, metric], covariance_cutoff)
-    top_training_genes <- subset(training_genes, metric > cutoff)
+    cutoff <- quantile(training_genes[, metric], covariance_cutoff)
+    top_training_genes <- training_genes %>% dplyr::filter(get(metric) > cutoff)
+
     ligand_scores_result<-get_ligand_trajectory_scores_regression(top_training_genes, active_ligand_potentials)
     names(ligand_scores_result) <- c(path_name[1], "model")
     importances<-sort(ligand_scores_result$model$importance[,"IncNodePurity"], decreasing=TRUE)
